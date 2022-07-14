@@ -1,0 +1,28 @@
+{
+    "name": "Batalha Naval",
+    "version": "0.2.1",
+    "description": "Jogo de batalha naval desenvolvido por Wadson Pontes e Pedro Garcia",
+    "main": "index.js",
+    "scripts": {
+        "start": "node -r dotenv/config server/index.js"
+    },
+    "keywords": [
+        "jogo",
+        "batalha naval"
+    ],
+    "author": {
+        "name": "Wadson Pontes",
+        "email": "wadsonpontesdesouza@hotmail.com",
+        "url": "https://wadsonpontes.com.br"
+    },
+    "license": "MIT",
+    "dependencies": {
+        "cors": "^2.8.5",
+        "dotenv": "^16.0.1",
+        "express": "^4.18.1",
+        "helmet": "^5.0.2",
+        "morgan": "^1.10.0",
+        "uuid": "^8.3.2",
+        "ws": "^8.6.0"
+    }
+}

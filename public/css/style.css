@@ -1,0 +1,202 @@
+*{
+	margin: 0;
+	padding: 0;
+    font-family: system-ui;
+    font-size: 20px;
+    color: white;
+    font-weight: bolder;
+}
+body{
+    background-color: #141B46;
+}
+article{
+	display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+}
+label,input{
+	display: block;
+	text-align: center;
+}
+
+input{
+    color: #16437C;
+    padding: 5px;
+    border-radius: 10px;
+    margin:auto;
+}
+
+footer{
+	position: fixed;
+    bottom: 0;
+    text-align: center;
+    width: 100%;
+}
+
+table{
+    display:inline-block;
+}
+
+section{
+    text-align: center;
+    width: 100%;
+    padding: 25px;
+    box-sizing: border-box;
+}
+
+menu{
+    text-align: center;
+}
+
+h1{
+    font-size: 30px;
+    position: fixed;
+    top: 100px;
+    font-weight: 900;
+    width: 100vw;
+    left: 0;
+}
+
+button{
+    display: inline-block;
+    border-radius: 10px;
+    padding: 10px;
+    font-weight: 900;
+    border: none;
+    width: 150px;
+    background-color: #C8158D;
+    color: white;
+    margin: 0 25px 25px 25px;
+    cursor: pointer;
+}
+
+button:disabled{
+    background-color: rgba(239, 239, 239, 0.3);
+    cursor: default;
+}
+
+dialog{
+    max-width: 640px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    margin: auto;
+    max-height: 560px;
+    border-radius: 10px;
+    border: none;
+}
+
+dialog header{
+    background-color: #C8158D;
+    margin-bottom: 25px;
+}
+
+dialog h2 {
+    padding: 10px 15px;
+}
+
+dialog label, dialog select, dialog option, dialog p {
+    color: #C8168D;
+}
+
+dialog input {
+    margin-bottom: 25px;
+}
+
+dialog select{
+    padding: 5px;
+    border-radius: 10px;
+    margin: auto;
+    width: 295px;
+    text-align: center;
+}
+
+dialog option:hover{
+    background-color: red;
+}
+
+dialog .erro{
+    color: #16437C;
+}
+
+footer p{
+    font-size: 15px;
+    margin-bottom: 5px;
+}
+
+ul{
+    width: 350px;
+    height: 350px;
+    display: block;
+    border-radius: 10px;
+    background-color: white;
+    overflow-y: scroll;
+    margin: auto;
+    overflow-x: hidden;
+}
+
+li{
+    display: block;
+    margin: 1px;
+    cursor: pointer;
+    width: 338px;
+    color: black;
+    padding: 5px 10px;
+}
+
+li:hover{
+    color: white;
+    background-color: #4D96FC;
+}
+
+td{
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+}
+
+.erro{
+    display: block;
+    height: 25px;
+    color: #C8158D;
+    line-height: 1;
+}
+
+.cor-0{
+    background-color: #4D96FC;
+}
+
+.cor-1{
+    background-color: #E4E200;
+}
+
+.cor-2,.cor-3{
+    background-color: #F52E21;
+}
+
+.cor-4,.cor-5,.cor-6{
+    background-color: #0B628B;
+}
+
+.cor-7,.cor-8,.cor-9,.cor-10{
+    background-color: #008A4B;
+}
+
+.cor-11,.cor-12,.cor-13{
+    background-color: #F07E18;
+}
+
+.desligado{
+	display: none;
+}
+
+.invisivel{
+    visibility: hidden;
+}

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
+    <title>Batalha Naval</title>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    </style>
+</head>
+<body>
+    <header>
+        <nav></nav>
+    </header>
+    <main>
+        <article>
+            <section id="tela-inicial">
+                <h1>Batalha Naval</h1>
+                <label for="campo-nome">Nome do Jogador</label>
+                <input id="campo-nome" type="text">
+                <p id="erro-nome" class="erro"></p>
+                <button onclick="entrarNoJogo()">ENTRAR</button>
+            </section>
+            <section id="tela-saguao" class="desligado">
+                <h1>Saguão</h1>
+                <ul id="lista-saguao">
+                </ul>
+                <p id="erro-saguao" class="erro"></p>
+                <button onclick="abrirModal('modal_entrar_sala_oculta')">Entrar</button>
+                <button onclick="abrirModal('modal_criar_sala')">Criar Sala</button>
+            </section>
+            <section id="tela-sala" class="desligado">
+                <h1>Sala</h1>
+                <ul id="lista-sala">
+                </ul>
+                <p id="erro-sala" class="erro"></p>
+                <button onclick="sairDaSala()">Sair</button>
+                <button onclick="jogar()">Jogar</button>
+            </section>
+            <section id="tela-preparacao" class="desligado">
+                <h2>Posicione suas tropas</h2>
+                <p id="comando-preparacao"></p>
+                <table id="tabuleiro-preparacao"></table>
+                <p id="erro-preparacao" class="erro"></p>
+                <button id="botao-pronto" class="invisivel" disabled onclick="pronto()">Pronto</button>
+            </section>
+            <section id="tela-jogo" class="desligado">
+                <p id="comando-jogo"></p>
+                <table id="tabuleiro-jogo"></table>
+                <table id="tiros-jogo"></table>
+                <p id="erro-jogo" class="erro"></p>
+            </section>
+            <section id="tela-resultado" class="desligado"></section>
+
+            <dialog id="modal-criar-sala">
+                <header><h2>Criar Sala</h2></header>
+
+                <section>
+                    <label for="campo-nome-criar-sala">Nome da Sala</label>
+                    <input id="campo-nome-criar-sala" type="text">
+
+                    <label for="campo-codigo-criar-sala">Código (caso privado)</label>
+                    <input id="campo-codigo-criar-sala" type="text">
+
+                    <label for="campo-visibilidade-criar-sala">Visibilidade</label>
+                    <select id="campo-visibilidade-criar-sala">
+                        <option value="true">Listado</option>
+                        <option value="false">Não Listado</option>
+                    </select>
+
+                    <p id="erro-criar-sala" class="erro"></p>
+                </section>
+
+                <menu>
+                    <button onclick="fecharModal()">Cancelar</button>
+                    <button onclick="criarSala()">Criar</button>
+                </menu>
+            </dialog>
+
+            <dialog id="modal-entrar-sala">
+                <header><h2>Entrar em Sala</h2></header>
+
+                <section>
+                    <input id="campo-nome-entrar-sala" type="text" class="desligado">
+
+                    <label for="campo-codigo-entrar-sala">Código</label>
+                    <input id="campo-codigo-entrar-sala" type="text">
+
+                    <p id="erro-entrar-sala" class="erro"></p>
+                </section>
+
+                <menu>
+                    <button onclick="fecharModal()">Cancelar</button>
+                    <button onclick="entrarEmSala()">Entrar</button>
+                </menu>
+            </dialog>
+
+            <dialog id="modal-entrar-sala-oculta">
+                <header><h2>Entrar em Sala</h2></header>
+
+                <section>
+                    <label for="campo-nome-entrar-sala-oculta">Nome da Sala</label>
+                    <input id="campo-nome-entrar-sala-oculta" type="text">
+
+                    <label for="campo-codigo-entrar-sala-oculta">Código (caso privado)</label>
+                    <input id="campo-codigo-entrar-sala-oculta" type="text">
+
+                    <p id="erro-entrar-sala-oculta" class="erro"></p>
+                </section>
+
+                <menu>
+                    <button onclick="fecharModal()">Cancelar</button>
+                    <button onclick="entrarEmSala()">Entrar</button>
+                </menu>
+            </dialog>
+
+            <dialog id="modal-deletar-sala">
+                <header><h2>Exclusão de Sala</h2></header>
+
+                <section>
+                    <p>Tem certeza que deseja excluir essa sala?</p>
+                    <p id="erro-deletar-sala" class="erro"></p>
+                </section>
+
+                <menu>
+                    <button onclick="fecharModal()">Cancelar</button>
+                    <button onclick="deletarSala()">Excluir</button>
+                </menu>
+            </dialog>
+        </article>
+    </main>
+    <footer>
+        <p>Todos os direitos reservados</p>
+    </footer>
+    <script src="/js/main.js"></script>
+</body>
+</html>
