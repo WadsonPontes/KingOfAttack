@@ -24,8 +24,18 @@ class Partida {
 
         for (let jogador of sala.jogadores) {
             jogador.idpartida = this.id;
-            jogador.estado = Estado.PREPARACAO;
+            jogador.estado = Estado.JOGO;
         }
+    }
+
+    getJogadores() {
+        let res = [];
+
+        for (let jog of this.jogadores) {
+            res.push(jog.get());
+        }
+
+        return res;
     }
 }
 

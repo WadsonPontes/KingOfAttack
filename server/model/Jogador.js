@@ -8,6 +8,10 @@ class Jogador {
 	idpartida;
 	p;
 	nome;
+	x;
+	y;
+	largura;
+	altura;
 	tabuleiro;
 	tiros;
 	esquadra;
@@ -19,6 +23,10 @@ class Jogador {
 	constructor(ws) {
 		this.ws = ws;
 		this.id = uuid.v4();
+		this.x = 250;
+		this.y = 250;
+		this.largura = 50;
+		this.altura = 50;
 		this.esquadra = 1;
 		this.estado = Estado.INICIAL;
 		this.init();
@@ -42,6 +50,10 @@ class Jogador {
 	get() {
 		return {
 			nome: this.nome,
+			x: this.x,
+			y: this.y,
+			largura: this.largura,
+			altura: this.altura,
 			tabuleiro: this.tabuleiro,
 			tiros: this.tiros,
 			esquadra: this.esquadra,

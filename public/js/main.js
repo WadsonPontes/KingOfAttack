@@ -3,6 +3,7 @@ let e = {};
 let tela = 'tela_inicial';
 let modal = null;
 let jogador;
+let jogadores;
 
 ws.onmessage = (evento) => {
     const dados = JSON.parse(evento.data);
@@ -85,6 +86,8 @@ function mainPartida(dados) {
         case 'listar':
             verificarJogo(dados);
             break;
+        case 'movimentar':
+            verificarMovimentacao(dados);
         default:
             break;
     }
@@ -197,6 +200,67 @@ function carregarJogo() {
     }));
 }
 
+function verificarJogo(dados) {
+    if (dados.estado == 'erro') {
+        e.erro_jogo.textContent = dados.mensagem;
+    }
+    else {
+        jogadores = dados.jogadores;
+        loop();
+    }
+}
+
+function loop() {
+    e.ctx.clearRect(0, 0, e.canvas.width, e.canvas.height);
+
+    for (let jog of jogadores) {
+        e.ctx.fillStyle = "#3B5998";
+        e.ctx.fillRect(jog.x, jog.y, jog.largura, jog.altura);
+    }
+
+    window.requestAnimationFrame(loop);
+}
+
+function verificarMovimentacao(dados) {
+    jogadores = dados.jogadores;
+}
+
+function teclou(event) {
+    if (jogador.estado == 6 /* JOGO */) {
+        switch (event.key) {
+            case "w":
+            case "ArrowUp":
+                jogador.y -= 1;
+                break;
+
+            case "s":
+            case "ArrowDown":
+                jogador.y += 1;
+                break;
+
+            case "a":
+            case "ArrowLeft":
+                jogador.x -= 1;
+                break;
+
+            case "d":
+            case "ArrowRight":
+                jogador.x += 1;
+                break;
+
+            default:
+                break;
+        }
+
+        ws.send(JSON.stringify({
+            tipo: 'partida',
+            funcao: 'movimentar',
+            x: jogador.x,
+            y: jogador.y
+        }));
+    }
+}
+
 function verificarPreparacao(dados) {
     if (dados.estado == 'erro') {
         e.erro_preparacao.textContent = dados.mensagem;
@@ -204,16 +268,6 @@ function verificarPreparacao(dados) {
     else {
         jogador = dados.jogador;
         listarPreparacao(dados.mensagem);
-    }
-}
-
-function verificarJogo(dados) {
-    if (dados.estado == 'erro') {
-        e.erro_jogo.textContent = dados.mensagem;
-    }
-    else {
-        jogador = dados.jogador;
-        listarJogo(dados.mensagem);
     }
 }
 
@@ -340,7 +394,7 @@ function verificarJogar(dados) {
     }
     else {
         jogador = dados.jogador;
-        mudarPara('tela_preparacao');
+        mudarPara('tela_jogo');
     }
 }
 
@@ -497,6 +551,13 @@ function main() {
     e.tabuleiro_jogo = document.querySelector('#tabuleiro-jogo');
     e.tiros_jogo = document.querySelector('#tiros-jogo');
     e.comando_jogo = document.querySelector('#comando-jogo');
+
+    e.canvas = document.querySelector('canvas');
+    e.canvas.width = window.innerWidth;
+    e.canvas.height = window.innerHeight;
+    e.ctx = e.canvas.getContext("2d");
+
+    document.addEventListener("keydown", teclou);
 }
 
 main();

@@ -8,7 +8,10 @@ module.exports = {
 	main: (GM, ws, dados, jogador) => {
 		switch (dados.funcao) {
 			case 'listar':
-				GM.PreparacaoController.listar(GM, ws, dados, jogador);
+				GM.PartidaController.listar(GM, ws, dados, jogador);
+				break;
+			case 'movimentar':
+				GM.PartidaController.movimentar(GM, ws, dados, jogador);
 				break;
 			default:
 				break;
@@ -55,7 +58,7 @@ module.exports = {
 		            funcao: 'listar',
 		            estado: 'sucesso',
 		            mensagem: res.mensagem,
-		            jogador: jog.get()
+		            jogadores: partida.getJogadores()
 		        }));
 		    }
 		}
@@ -63,6 +66,38 @@ module.exports = {
 			ws.send(JSON.stringify({
 				tipo: 'partida',
 				funcao: 'listar',
+				estado: 'erro',
+				mensagem: res.mensagem
+			}));
+		}
+	},
+
+	movimentar: (GM, ws, dados, jogador) => {
+		// let res = GM.Util.validarMovimentacao(GM, jogador, dados);
+		let partida = GM.partidas[jogador.idpartida];
+		let res = {
+			valido: true,
+			mensagem: ''
+		}
+
+		jogador.x = dados.x;
+		jogador.y = dados.y;
+
+		if (res.valido) {
+			for (let jog of partida.jogadores) {
+		        jog.ws.send(JSON.stringify({
+		            tipo: 'partida',
+		            funcao: 'movimentar',
+		            estado: 'sucesso',
+		            mensagem: res.mensagem,
+		            jogadores: partida.getJogadores()
+		        }));
+		    }
+		}
+		else {
+			ws.send(JSON.stringify({
+				tipo: 'partida',
+				funcao: 'movimentar',
 				estado: 'erro',
 				mensagem: res.mensagem
 			}));
