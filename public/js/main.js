@@ -213,6 +213,12 @@ function verificarJogo(dados) {
 function loop() {
     e.ctx.clearRect(0, 0, e.canvas.width, e.canvas.height);
 
+    e.ctx.fillStyle = "#FF0000";
+    e.ctx.fillRect((e.canvas.width / 2) - 100, 10, 200, 25);
+
+    e.ctx.fillStyle = "#00FF00";
+    e.ctx.fillRect((e.canvas.width / 2) - 100, 10, (jogador.vida / jogador.max_vida) * 200, 25);
+
     for (let jog of jogadores) {
         e.ctx.fillStyle = "#3B5998";
         e.ctx.fillRect(jog.x, jog.y, jog.largura, jog.altura);
@@ -226,38 +232,57 @@ function verificarMovimentacao(dados) {
 }
 
 function teclou(event) {
-    if (jogador.estado == 6 /* JOGO */) {
-        switch (event.key) {
-            case "w":
-            case "ArrowUp":
-                jogador.y -= 1;
-                break;
-
-            case "s":
-            case "ArrowDown":
-                jogador.y += 1;
-                break;
-
-            case "a":
-            case "ArrowLeft":
-                jogador.x -= 1;
-                break;
-
-            case "d":
-            case "ArrowRight":
-                jogador.x += 1;
-                break;
-
-            default:
-                break;
+    switch (jogador.estado) {
+        case 1: /* INICIAL */ {
+            switch (event.key) {
+                case "Enter":
+                    entrarNoJogo();
+                    break;
+                default:
+                    break;
+            }
+            break;
         }
 
-        ws.send(JSON.stringify({
-            tipo: 'partida',
-            funcao: 'movimentar',
-            x: jogador.x,
-            y: jogador.y
-        }));
+        case 6: /* JOGO */ {
+            switch (event.key) {
+                case "w":
+                case "ArrowUp":
+                    jogador.y -= 1;
+                    break;
+
+                case "s":
+                case "ArrowDown":
+                    jogador.y += 1;
+                    break;
+
+                case "a":
+                case "ArrowLeft":
+                    jogador.x -= 1;
+                    break;
+
+                case "d":
+                case "ArrowRight":
+                    jogador.x += 1;
+                    break;
+
+                default:
+                    break;
+            }
+
+            ws.send(JSON.stringify({
+                tipo: 'partida',
+                funcao: 'movimentar',
+                x: jogador.x,
+                y: jogador.y
+            }));
+
+            break;
+        }
+
+        default: {
+            break;
+        }
     }
 }
 

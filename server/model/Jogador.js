@@ -8,6 +8,8 @@ class Jogador {
 	idpartida;
 	p;
 	nome;
+	max_vida;
+	vida;
 	x;
 	y;
 	largura;
@@ -23,8 +25,10 @@ class Jogador {
 	constructor(ws) {
 		this.ws = ws;
 		this.id = uuid.v4();
-		this.x = 250;
-		this.y = 250;
+		this.max_vida = 2000;
+		this.vida = 2000;
+		this.x = Math.floor((Math.random() * 800) + 1);
+		this.y = Math.floor((Math.random() * 800) + 1);
 		this.largura = 50;
 		this.altura = 50;
 		this.esquadra = 1;
@@ -50,6 +54,8 @@ class Jogador {
 	get() {
 		return {
 			nome: this.nome,
+			max_vida: this.max_vida,
+			vida: this.vida,
 			x: this.x,
 			y: this.y,
 			largura: this.largura,
