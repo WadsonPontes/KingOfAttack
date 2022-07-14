@@ -1,11 +1,11 @@
-# Jogo de Batalha Naval.
+# Jogo de King of Attack.
 
 ## Para rodar na sua máquina
 * Necessário ter o git e NodeJS com o npm instalados
 * Para baixar o repositório:
 ``` bash
-git clone https://github.com/WadsonPontes/BatalhaNaval.git
-cd BatalhaNaval
+git clone https://github.com/WadsonPontes/KingOfAttack.git
+cd KingOfAttack
 npm install
 ```
 * Para rodar a aplicação
