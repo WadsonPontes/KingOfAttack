@@ -107,11 +107,11 @@ module.exports = {
 			res.valido = false;
 			res.mensagem = 'Peça para um administrador começar a partida';
 		}
-		else if (sala.jogadores < 2) {
+		else if (sala.jogadores.length < 2) {
 			res.valido = false;
 			res.mensagem = 'Número de jogadores insuficiente para começar uma partida';
 		}
-		else if (sala.jogadores > 2) {
+		else if (sala.jogadores.length > 2) {
 			res.valido = false;
 			res.mensagem = 'Número de jogadores acima do permitido';
 		}
