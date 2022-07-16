@@ -1,14 +1,14 @@
 {
-    "name": "Batalha Naval",
-    "version": "0.2.1",
-    "description": "Jogo de batalha naval desenvolvido por Wadson Pontes e Pedro Garcia",
+    "name": "King of Attack",
+    "version": "0.1.0",
+    "description": "Jogo de luta desenvolvido por Wadson Pontes",
     "main": "index.js",
     "scripts": {
         "start": "node -r dotenv/config server/index.js"
     },
     "keywords": [
         "jogo",
-        "batalha naval"
+        "luta"
     ],
     "author": {
         "name": "Wadson Pontes",
