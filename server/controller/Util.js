@@ -111,7 +111,7 @@ module.exports = {
 			res.valido = false;
 			res.mensagem = 'Número de jogadores insuficiente para começar uma partida';
 		}
-		else if (sala.jogadores.length > 2) {
+		else if (sala.jogadores.length > 5) {
 			res.valido = false;
 			res.mensagem = 'Número de jogadores acima do permitido';
 		}
