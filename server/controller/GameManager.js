@@ -26,6 +26,22 @@ module.exports = {
 	    ws.on('error', erro => GM.erro(GM, jogador, erro));
 	    ws.on('close', (id, descricao) => GM.conexaoFechada(GM, jogador, id, descricao));
 
+	    let encontrado = false;
+	    for (let prop in GM.partidas) {
+	    	GM.partidas[prop].jogadores.push(jogador);
+	    	jogador.idpartida = GM.partidas[prop].id;
+	    	jogador.estado = 6;
+	    	encontrado = true;
+	    	break;
+	    }
+
+	    if (!encontrado) {
+	    	let sala = new Sala(jogador, { listado:true });
+	    	GM.salas[sala.id] = sala;
+	    	let partida = new Partida(GM.salas[jogador.idsala]);
+	    	GM.partidas[partida.id] = partida;
+	    }
+
 	    ws.send(JSON.stringify({
 	        tipo: 'conexao',
 	        jogador: jogador.get()

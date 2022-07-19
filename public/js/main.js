@@ -4,6 +4,7 @@ let tela = 'tela_inicial';
 let modal = null;
 let jogador;
 let jogadores;
+let carregados = 0;
 
 ws.onmessage = (evento) => {
     const dados = JSON.parse(evento.data);
@@ -11,6 +12,7 @@ ws.onmessage = (evento) => {
     switch (dados.tipo) {
         case 'conexao':
             jogador = dados.jogador;
+            mudarPara('tela_jogo');
             break;
         case 'entrar':
             verificarEntrarNoJogo(dados);
@@ -219,12 +221,26 @@ function loop() {
     e.ctx.fillStyle = "#00FF00";
     e.ctx.fillRect((e.canvas.width / 2) - 100, 10, (jogador.vida / jogador.max_vida) * 200, 25);
 
-    for (let jog of jogadores) {
-        e.ctx.fillStyle = "#3B5998";
-        e.ctx.fillRect(jog.x, jog.y, jog.largura, jog.altura);
+    if (carregados > 9) {
+        for (let jog of jogadores) {
+            if (!jog.img) {
+                jog.img = e.cavaleiro.idle[0];
+                jog.pose = 'idle';
+                jog.quadro = 0;
+                jog.duracao = performance.now();
+            }
+            else if (performance.now() - jog.duracao > 100) {
+                jog.quadro = (jog.quadro + 1) % 10;
+                jog.img = e.cavaleiro[jog.pose][jog.quadro];
+                jog.duracao = performance.now();
+            }
+
+            e.ctx.drawImage(jog.img, jog.x, jog.y, jog.largura, jog.altura);
+        }
     }
 
-    window.requestAnimationFrame(loop);
+    // window.requestAnimationFrame(loop);
+    setTimeout(loop, 50);
 }
 
 function verificarMovimentacao(dados) {
@@ -232,6 +248,10 @@ function verificarMovimentacao(dados) {
 }
 
 function teclou(event) {
+    setTimeout(acao, 50, event);
+}
+
+function acao(event) {
     switch (jogador.estado) {
         case 1: /* INICIAL */ {
             switch (event.key) {
@@ -581,6 +601,16 @@ function main() {
     e.canvas.width = window.innerWidth;
     e.canvas.height = window.innerHeight;
     e.ctx = e.canvas.getContext("2d");
+
+    e.cavaleiro = {};
+
+    e.cavaleiro.idle = [];
+    for (let i = 1; i <= 10; ++i) {
+        let img = new Image();
+        img.src = `img/cavaleiro/png/original/Idle (${i}).png`;
+        img.addEventListener('load', () => ++carregados, false);
+        e.cavaleiro.idle.push(img);
+    }
 
     document.addEventListener("keydown", teclou);
 }

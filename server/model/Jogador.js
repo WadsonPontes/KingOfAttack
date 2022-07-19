@@ -28,9 +28,9 @@ class Jogador {
 		this.max_vida = 2000;
 		this.vida = 2000;
 		this.x = Math.floor((Math.random() * 800) + 1);
-		this.y = Math.floor((Math.random() * 800) + 1);
-		this.largura = 50;
-		this.altura = 50;
+		this.y = 600; // Math.floor((Math.random() * 800) + 1);
+		this.largura = 116;
+		this.altura = 140;
 		this.esquadra = 1;
 		this.estado = Estado.INICIAL;
 		this.init();
