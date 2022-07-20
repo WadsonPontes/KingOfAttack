@@ -215,43 +215,80 @@ function verificarJogo(dados) {
 function loop() {
     e.ctx.clearRect(0, 0, e.canvas.width, e.canvas.height);
 
+    for (let jog of jogadores) {
+        if (jog.nome != jogador.nome && jog.pose == 'attack' && jog.quadro >= 5 && jog.quadro <= 7) {
+            if ((jog.x < jogador.x && jog.x + jog.largura >= jogador.x && jog.escala == 1) || jog.x > jogador.x && jogador.x + jogador.largura >= jog.x && jog.escala == -1) {
+                jogador.vida = Math.max(jogador.vida - jog.dano, 0);
+
+                if (jogador.vida == 0 && jogador.pose != 'dead') {
+                    jogador.pose = 'dead';
+                    jogador.quadro = 0;
+                    jogador.escala = -jog.escala;
+                    jogador.estado = 12; // DERROTADO
+                }
+            }
+        }
+    }
+
     e.ctx.fillStyle = "#FF0000";
     e.ctx.fillRect((e.canvas.width / 2) - 100, 10, 200, 25);
 
     e.ctx.fillStyle = "#00FF00";
     e.ctx.fillRect((e.canvas.width / 2) - 100, 10, (jogador.vida / jogador.max_vida) * 200, 25);
 
-    if (carregados > 9) {
+    if (carregados > 79) {
         for (let jog of jogadores) {
-            if (!jog.img) {
-                jog.img = e.cavaleiro.idle[0];
-                jog.pose = 'idle';
-                jog.quadro = 0;
-                jog.duracao = performance.now();
-            }
-            else if (performance.now() - jog.duracao > 100) {
-                jog.quadro = (jog.quadro + 1) % 10;
-                jog.img = e.cavaleiro[jog.pose][jog.quadro];
-                jog.duracao = performance.now();
-            }
+            if (jog.nome != jogador.nome) {
+                let img = e[jog.classe][jog.pose][jog.quadro];
 
-            e.ctx.drawImage(jog.img, jog.x, jog.y, jog.largura, jog.altura);
+                e.ctx.save();
+                e.ctx.translate(jog.x, jog.y);
+                e.ctx.rotate(jog.angulo * Math.PI / 180);
+                e.ctx.scale(jog.escala, 1);
+                e.ctx.drawImage(img, 0, 0, (jog.largura * jog.escala), jog.altura);
+                e.ctx.restore();
+            }
         }
     }
 
+    let img = e[jogador.classe][jogador.pose][jogador.quadro];
+    e.ctx.save();
+    e.ctx.translate(jogador.x, jogador.y);
+    e.ctx.rotate(jogador.angulo * Math.PI / 180);
+    e.ctx.scale(jogador.escala, 1);
+    e.ctx.drawImage(img, 0, 0, (jogador.largura * jogador.escala), jogador.altura);
+    e.ctx.restore();
+
+    if (performance.now() - jogador.duracao > 20) {
+        if (jogador.pose == 'attack' && jogador.quadro == 9) {
+            jogador.pose = 'idle';
+            jogador.quadro = 0;
+        }
+        else if (jogador.pose == 'dead' && jogador.quadro == 9) {
+
+        }
+        else {
+            jogador.quadro = (jogador.quadro + 1) % 10;
+        }
+        
+        jogador.duracao = performance.now();
+    }
+
+    ws.send(JSON.stringify({
+        tipo: 'partida',
+        funcao: 'movimentar',
+        jogador: jogador
+    }));
+
     // window.requestAnimationFrame(loop);
-    setTimeout(loop, 50);
+    setTimeout(loop, 1);
 }
 
 function verificarMovimentacao(dados) {
     jogadores = dados.jogadores;
 }
 
-function teclou(event) {
-    setTimeout(acao, 50, event);
-}
-
-function acao(event) {
+function teclou(event) {//console.log(event.key);
     switch (jogador.estado) {
         case 1: /* INICIAL */ {
             switch (event.key) {
@@ -268,34 +305,65 @@ function acao(event) {
             switch (event.key) {
                 case "w":
                 case "ArrowUp":
-                    jogador.y -= 1;
+                    jogador.y -= 10;
+                    jogador.pose = 'walk';
                     break;
 
                 case "s":
                 case "ArrowDown":
-                    jogador.y += 1;
+                    jogador.y += 10;
+                    jogador.pose = 'walk';
                     break;
 
                 case "a":
                 case "ArrowLeft":
-                    jogador.x -= 1;
+                    jogador.x -= 10;
+                    jogador.escala = -1;
+                    jogador.pose = 'walk';
                     break;
 
                 case "d":
                 case "ArrowRight":
-                    jogador.x += 1;
+                    jogador.x += 10;
+                    jogador.escala = 1;
+                    jogador.pose = 'walk';
+                    break;
+
+                case " ":
+                    jogador.pose = 'attack';
                     break;
 
                 default:
                     break;
             }
 
-            ws.send(JSON.stringify({
-                tipo: 'partida',
-                funcao: 'movimentar',
-                x: jogador.x,
-                y: jogador.y
-            }));
+            break;
+        }
+
+        default: {
+            break;
+        }
+    }
+}
+
+function desteclou(event) {
+    switch (jogador.estado) {
+        case 6: /* JOGO */ {
+            switch (event.key) {
+                case "w":
+                case "ArrowUp":
+                case "s":
+                case "ArrowDown":
+                case "a":
+                case "ArrowLeft":
+                case "d":
+                case "ArrowRight":
+                    jogador.pose = 'idle';
+                    break;
+
+                default:
+                    break;
+            }
 
             break;
         }
@@ -602,6 +670,8 @@ function main() {
     e.canvas.height = window.innerHeight;
     e.ctx = e.canvas.getContext("2d");
 
+    // CAVALEIRO
+
     e.cavaleiro = {};
 
     e.cavaleiro.idle = [];
@@ -612,7 +682,142 @@ function main() {
         e.cavaleiro.idle.push(img);
     }
 
+    e.cavaleiro.walk = [];
+    for (let i = 1; i <= 10; ++i) {
+        let img = new Image();
+        img.src = `img/cavaleiro/png/original/Run (${i}).png`;
+        img.addEventListener('load', () => ++carregados, false);
+        e.cavaleiro.walk.push(img);
+    }
+
+    e.cavaleiro.attack = [];
+    for (let i = 1; i <= 10; ++i) {
+        let img = new Image();
+        img.src = `img/cavaleiro/png/original/Attack (${i}).png`;
+        img.addEventListener('load', () => ++carregados, false);
+        e.cavaleiro.attack.push(img);
+    }
+
+    e.cavaleiro.dead = [];
+    for (let i = 1; i <= 10; ++i) {
+        let img = new Image();
+        img.src = `img/cavaleiro/png/original/Dead (${i}).png`;
+        img.addEventListener('load', () => ++carregados, false);
+        e.cavaleiro.dead.push(img);
+    }
+
+    // NINJA
+
+    e.ninja = {};
+
+    e.ninja.idle = [];
+    for (let i = 0; i <= 9; ++i) {
+        let img = new Image();
+        img.src = `img/ninja/png/Idle__00${i}.png`;
+        img.addEventListener('load', () => ++carregados, false);
+        e.ninja.idle.push(img);
+    }
+
+    e.ninja.walk = [];
+    for (let i = 0; i <= 9; ++i) {
+        let img = new Image();
+        img.src = `img/ninja/png/Run__00${i}.png`;
+        img.addEventListener('load', () => ++carregados, false);
+        e.ninja.walk.push(img);
+    }
+
+    e.ninja.attack = [];
+    for (let i = 0; i <= 9; ++i) {
+        let img = new Image();
+        img.src = `img/ninja/png/Attack__00${i}.png`;
+        img.addEventListener('load', () => ++carregados, false);
+        e.ninja.attack.push(img);
+    }
+
+    e.ninja.dead = [];
+    for (let i = 0; i <= 9; ++i) {
+        let img = new Image();
+        img.src = `img/ninja/png/Dead__00${i}.png`;
+        img.addEventListener('load', () => ++carregados, false);
+        e.ninja.dead.push(img);
+    }
+
+
+    // SAMURAI
+
+    e.samurai = {};
+
+    e.samurai.idle = [];
+    for (let i = 0; i <= 9; ++i) {
+        let img = new Image();
+        img.src = `img/samurai/png/Idle__00${i}.png`;
+        img.addEventListener('load', () => ++carregados, false);
+        e.samurai.idle.push(img);
+    }
+
+    e.samurai.walk = [];
+    for (let i = 0; i <= 9; ++i) {
+        let img = new Image();
+        img.src = `img/samurai/png/Run__00${i}.png`;
+        img.addEventListener('load', () => ++carregados, false);
+        e.samurai.walk.push(img);
+    }
+
+    e.samurai.attack = [];
+    for (let i = 0; i <= 9; ++i) {
+        let img = new Image();
+        img.src = `img/samurai/png/Attack__00${i}.png`;
+        img.addEventListener('load', () => ++carregados, false);
+        e.samurai.attack.push(img);
+    }
+
+    e.samurai.dead = [];
+    for (let i = 0; i <= 9; ++i) {
+        let img = new Image();
+        img.src = `img/samurai/png/Dead__00${i}.png`;
+        img.addEventListener('load', () => ++carregados, false);
+        e.samurai.dead.push(img);
+    }
+
+
+    // ROBÔ
+
+    e.robo = {};
+
+    e.robo.idle = [];
+    for (let i = 1; i <= 10; ++i) {
+        let img = new Image();
+        img.src = `img/robo/png/Idle (${i}).png`;
+        img.addEventListener('load', () => ++carregados, false);
+        e.robo.idle.push(img);
+    }
+
+    e.robo.walk = [];
+    for (let i = 1; i <= 10; ++i) {
+        let img = new Image();
+        img.src = `img/robo/png/Run (${i}).png`;
+        img.addEventListener('load', () => ++carregados, false);
+        e.robo.walk.push(img);
+    }
+
+    e.robo.attack = [];
+    for (let i = 1; i <= 10; ++i) {
+        let img = new Image();
+        img.src = `img/robo/png/Melee (${i}).png`;
+        img.addEventListener('load', () => ++carregados, false);
+        e.robo.attack.push(img);
+    }
+
+    e.robo.dead = [];
+    for (let i = 1; i <= 10; ++i) {
+        let img = new Image();
+        img.src = `img/robo/png/Dead (${i}).png`;
+        img.addEventListener('load', () => ++carregados, false);
+        e.robo.dead.push(img);
+    }
+
     document.addEventListener("keydown", teclou);
+    document.addEventListener("keyup", desteclou);
 }
 
 main();

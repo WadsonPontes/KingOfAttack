@@ -80,8 +80,7 @@ module.exports = {
 			mensagem: ''
 		}
 
-		jogador.x = dados.x;
-		jogador.y = dados.y;
+		jogador.set(dados.jogador);
 
 		if (res.valido) {
 			for (let jog of partida.jogadores) {
