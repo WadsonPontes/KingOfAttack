@@ -12,6 +12,7 @@ class Jogador {
 	max_vida;
 	vida;
 	dano;
+	velocidade;
 	x;
 	y;
 	largura;
@@ -32,11 +33,13 @@ class Jogador {
 	constructor(ws) {
 		this.ws = ws;
 		this.id = uuid.v4();
+		this.nome = uuid.v4();
 		let classes = ['cavaleiro', 'ninja', 'samurai', 'robo'];
 		this.classe = classes[Math.floor((Math.random() * 4))];
-		this.max_vida = 5000;
-		this.vida = 5000;
+		this.max_vida = 10000;
+		this.vida = 10000;
 		this.dano = 10;
+		this.velocidade = 10;
 		this.x = Math.floor((Math.random() * 800) + 1);
 		this.y = 600; // Math.floor((Math.random() * 800) + 1);
 		this.largura = 116;
@@ -73,6 +76,7 @@ class Jogador {
 			max_vida: this.max_vida,
 			vida: this.vida,
 			dano: this.dano,
+			velocidade: this.velocidade,
 			x: this.x,
 			y: this.y,
 			largura: this.largura,
@@ -96,6 +100,7 @@ class Jogador {
 		this.max_vida = dados.max_vida;
 		this.vida = dados.vida;
 		this.dano = dados.dano;
+		this.velocidade = dados.velocidade;
 		this.x = dados.x;
 		this.y = dados.y;
 		this.largura = dados.largura;

@@ -43,7 +43,7 @@ class Partida {
                 item = new Item();
 
                 for (let itm of this.itens) {
-                    if ((itm.x <= item.x && itm.x + itm.largura > item.x) || (itm.x >= item.x && item.x + item.largura > itm.x)) {
+                    if ((itm.x + itm.largura > item.x && itm.x + itm.largura < item.x + item.largura) || (itm.x < item.x + item.largura && itm.x > item.x)) {
                         sobreposto = true;
                     }
                 }
@@ -71,6 +71,16 @@ class Partida {
         }
 
         return res;
+    }
+
+    getItem(item) {
+        for (let itm of this.itens) {
+            if (itm.id == item.id) {
+                return itm;
+            }
+        }
+
+        return null;
     }
 }
 

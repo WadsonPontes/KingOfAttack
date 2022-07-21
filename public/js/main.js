@@ -91,7 +91,12 @@ function mainPartida(dados) {
             break;
         case 'movimentar':
             verificarMovimentacao(dados);
+            break;
+        case 'coletar':
+            verificarColetar(dados);
+            break;
         default:
+            verificarMovimentacao(dados);
             break;
     }
 }
@@ -208,9 +213,42 @@ function verificarJogo(dados) {
         e.erro_jogo.textContent = dados.mensagem;
     }
     else {
+        jogador = dados.jogador;
         jogadores = dados.jogadores;
         itens = dados.itens;
         loop();
+    }
+}
+
+function verificarMovimentacao(dados) {
+    // jogador = dados.jogador;
+    jogadores = dados.jogadores;
+    itens = dados.itens;
+}
+
+function verificarColetar(dados) {
+    if (dados.estado == 'erro') {
+        e.erro_jogo.textContent = dados.mensagem;
+    }
+    else {
+        // jogador = dados.jogador;
+        jogadores = dados.jogadores;
+        itens = dados.itens;
+        let item = dados.item;
+
+        switch (item.quadro) {
+            case 'cura':
+                jogador.vida = Math.min(jogador.vida + item.cura, jogador.max_vida);
+                break;
+            case 'velocidade':
+                jogador.velocidade += item.velocidade;
+                break;
+            case 'forca':
+                jogador.dano += item.forca;
+                break;
+            default:
+                break;
+        }
     }
 }
 
@@ -219,7 +257,7 @@ function loop() {
 
     for (let jog of jogadores) {
         if (jog.nome != jogador.nome && jog.pose == 'attack' && jog.quadro >= 5 && jog.quadro <= 7) {
-            if ((jog.x <= jogador.x && jog.x + jog.largura >= jogador.x && jog.escala == 1) || (jog.x >= jogador.x && jogador.x + jogador.largura >= jog.x && jog.escala == -1)) {
+            if ((jog.x + jog.largura/2 > jogador.x && jog.x + jog.largura/2 < jogador.x + jogador.largura) || (jog.escala == 1 && jog.x + jog.largura > jogador.x && jog.x + jog.largura < jogador.x + jogador.largura) || (jog.escala == -1 && jog.x < jogador.x + jogador.largura && jog.x > jogador.x)) {
                 jogador.vida = Math.max(jogador.vida - jog.dano, 0);
 
                 if (jogador.vida == 0 && jogador.pose != 'dead') {
@@ -287,6 +325,37 @@ function loop() {
     e.ctx.fillStyle = "#00FF00";
     e.ctx.fillRect((e.canvas.width / 2) - 100, 10, (jogador.vida / jogador.max_vida) * 200, 25);
 
+    if (jogador.pose == 'attack' && jogador.quadro >= 5 && jogador.quadro <= 7) {
+        for (let item of itens) {
+            if (item.pose == 'caixote') {
+                if ((jogador.x + jogador.largura/2 > item.x && jogador.x + jogador.largura/2 < item.x + item.largura) || (jogador.escala == 1 && jogador.x + jogador.largura > item.x && jogador.x + jogador.largura < item.x + item.largura) || (jogador.escala == -1 && jogador.x < item.x + item.largura && jogador.x > item.x)) {
+
+                    ws.send(JSON.stringify({
+                        tipo: 'partida',
+                        funcao: 'dano',
+                        subfuncao: 'jogador_em_item',
+                        jogador: jogador,
+                        item: item
+                    }));
+                }
+            }
+        }
+    }
+
+    for (let item of itens) {
+        if (item.pose == 'item') {
+            if (jogador.x + jogador.largura/2 > item.x && jogador.x + jogador.largura/2 < item.x + item.largura) {
+
+                ws.send(JSON.stringify({
+                    tipo: 'partida',
+                    funcao: 'coletar',
+                    jogador: jogador,
+                    item: item
+                }));
+            }
+        }
+    }
+
     ws.send(JSON.stringify({
         tipo: 'partida',
         funcao: 'movimentar',
@@ -294,12 +363,7 @@ function loop() {
     }));
 
     // window.requestAnimationFrame(loop);
-    setTimeout(loop, 1);
-}
-
-function verificarMovimentacao(dados) {
-    jogadores = dados.jogadores;
-    itens = dados.itens;
+    setTimeout(loop, 0);
 }
 
 function teclou(event) {//console.log(event.key);
@@ -319,26 +383,26 @@ function teclou(event) {//console.log(event.key);
             switch (event.key) {
                 case "w":
                 case "ArrowUp":
-                    jogador.y -= 10;
+                    jogador.y -= jogador.velocidade;
                     jogador.pose = 'walk';
                     break;
 
                 case "s":
                 case "ArrowDown":
-                    jogador.y += 10;
+                    jogador.y += jogador.velocidade;
                     jogador.pose = 'walk';
                     break;
 
                 case "a":
                 case "ArrowLeft":
-                    jogador.x -= 10;
+                    jogador.x -= jogador.velocidade;
                     jogador.escala = -1;
                     jogador.pose = 'walk';
                     break;
 
                 case "d":
                 case "ArrowRight":
-                    jogador.x += 10;
+                    jogador.x += jogador.velocidade;
                     jogador.escala = 1;
                     jogador.pose = 'walk';
                     break;
@@ -842,19 +906,19 @@ function main() {
 
     // ITENS
 
-    e.itens = {};
+    e.item = {};
 
-    e.itens.cura = new Image();
-    e.itens.cura.src = `img/itens/cura.png`;
-    e.itens.cura.addEventListener('load', () => ++carregados, false);
+    e.item.cura = new Image();
+    e.item.cura.src = `img/itens/cura.png`;
+    e.item.cura.addEventListener('load', () => ++carregados, false);
 
-    e.itens.velocidade = new Image();
-    e.itens.velocidade.src = `img/itens/velocidade.png`;
-    e.itens.velocidade.addEventListener('load', () => ++carregados, false);
+    e.item.velocidade = new Image();
+    e.item.velocidade.src = `img/itens/velocidade.png`;
+    e.item.velocidade.addEventListener('load', () => ++carregados, false);
 
-    e.itens.forca = new Image();
-    e.itens.forca.src = `img/itens/forca.png`;
-    e.itens.forca.addEventListener('load', () => ++carregados, false);
+    e.item.forca = new Image();
+    e.item.forca.src = `img/itens/forca.png`;
+    e.item.forca.addEventListener('load', () => ++carregados, false);
 
     document.addEventListener("keydown", teclou);
     document.addEventListener("keyup", desteclou);

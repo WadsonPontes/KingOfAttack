@@ -21,7 +21,6 @@ module.exports = {
 
 	novaConexao: (GM, ws, req) => {
 	    let jogador = new Jogador(ws);
-	    jogador.nome = '' + Math.random();
 
 	    ws.on('message', dados => GM.novaMensagem(GM, jogador, dados));
 	    ws.on('error', erro => GM.erro(GM, jogador, erro));

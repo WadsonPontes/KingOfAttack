@@ -13,6 +13,12 @@ module.exports = {
 			case 'movimentar':
 				GM.PartidaController.movimentar(GM, ws, dados, jogador);
 				break;
+			case 'dano':
+				GM.PartidaController.dano(GM, ws, dados, jogador);
+				break;
+			case 'coletar':
+				GM.PartidaController.coletar(GM, ws, dados, jogador);
+				break;
 			default:
 				break;
 		}
@@ -58,6 +64,7 @@ module.exports = {
 		            funcao: 'listar',
 		            estado: 'sucesso',
 		            mensagem: res.mensagem,
+		            jogador: jogador.get(),
 		            jogadores: partida.getJogadores(),
 		            itens: partida.getItens()
 		        }));
@@ -90,6 +97,7 @@ module.exports = {
 		            funcao: 'movimentar',
 		            estado: 'sucesso',
 		            mensagem: res.mensagem,
+		            jogador: jogador.get(),
 		            jogadores: partida.getJogadores(),
 		            itens: partida.getItens()
 		        }));
@@ -103,5 +111,86 @@ module.exports = {
 				mensagem: res.mensagem
 			}));
 		}
-	}
+	},
+
+	dano: (GM, ws, dados, jogador) => {
+		switch (dados.subfuncao) {
+			case 'jogador_em_item':
+				GM.PartidaController.danoJogadorEmItem(GM, ws, dados, jogador);
+				break;
+			default:
+				break;
+		}
+	},
+
+	danoJogadorEmItem: (GM, ws, dados, jogador) => {
+		// let res = GM.Util.validardanoJogadorEmItem(GM, jogador, dados);
+		let partida = GM.partidas[jogador.idpartida];
+		let item = partida.getItem(dados.item);
+		let res = {
+			valido: true,
+			mensagem: ''
+		}
+
+		if (item) item.receberDano(jogador);
+
+		if (item && res.valido) {
+			for (let jog of partida.jogadores) {
+		        jog.ws.send(JSON.stringify({
+		            tipo: 'partida',
+		            funcao: 'dano',
+		            subfuncao: 'jogador_em_item',
+		            estado: 'sucesso',
+		            mensagem: res.mensagem,
+		            jogador: jogador.get(),
+		            jogadores: partida.getJogadores(),
+		            itens: partida.getItens()
+		        }));
+		    }
+		}
+		else {
+			ws.send(JSON.stringify({
+				tipo: 'partida',
+				funcao: 'dano',
+	            subfuncao: 'jogador_em_item',
+				estado: 'erro',
+				mensagem: res.mensagem
+			}));
+		}
+	},
+
+	coletar: (GM, ws, dados, jogador) => {
+		// let res = GM.Util.validarColeta(GM, jogador, dados);
+		let partida = GM.partidas[jogador.idpartida];
+		let item = partida.getItem(dados.item);
+		let res = {
+			valido: true,
+			mensagem: ''
+		}
+
+		if (item && performance.now() - item.duracao > 1000) item.coletar(partida);
+
+		if (item && performance.now() - item.duracao > 1000 && res.valido) {
+			for (let jog of partida.jogadores) {
+		        jog.ws.send(JSON.stringify({
+		            tipo: 'partida',
+		            funcao: 'coletar',
+		            estado: 'sucesso',
+		            mensagem: res.mensagem,
+		            jogador: jogador.get(),
+		            jogadores: partida.getJogadores(),
+		            itens: partida.getItens(),
+		            item: item.get()
+		        }));
+		    }
+		}
+		else {
+			ws.send(JSON.stringify({
+				tipo: 'partida',
+				funcao: 'coletar',
+				estado: 'erro',
+				mensagem: res.mensagem
+			}));
+		}
+	},
 }

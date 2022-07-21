@@ -9,6 +9,9 @@ class Item {
 	nome;
 	max_vida;
 	vida;
+	cura;
+	velocidade;
+	forca;
 	x;
 	y;
 	largura;
@@ -21,9 +24,13 @@ class Item {
 	estado;
 
 	constructor() {
+		this.id = uuid.v4();
 		this.nome = 'caixote';
-		this.max_vida = 500;
-		this.vida = 500;
+		this.max_vida = 1000;
+		this.vida = 1000;
+		this.cura = 5000;
+		this.velocidade = 10;
+		this.forca = 10;
 		this.x = Math.floor((Math.random() * 800) + 1);
 		this.y = 660; // Math.floor((Math.random() * 800) + 1);
 		this.largura = 70;
@@ -38,9 +45,13 @@ class Item {
 
 	get() {
 		return {
+			id: this.id,
 			nome: this.nome,
 			max_vida: this.max_vida,
 			vida: this.vida,
+			cura: this.cura,
+			velocidade: this.velocidade,
+			forca: this.forca,
 			x: this.x,
 			y: this.y,
 			largura: this.largura,
@@ -55,9 +66,13 @@ class Item {
 	}
 
 	set(dados) {
+		this.id = dados.id;
 		this.nome = dados.nome;
 		this.max_vida = dados.max_vida;
 		this.vida = dados.vida;
+		this.cura = dados.cura;
+		this.velocidade = dados.velocidade;
+		this.forca = dados.forca;
 		this.x = dados.x;
 		this.y = dados.y;
 		this.largura = dados.largura;
@@ -68,6 +83,34 @@ class Item {
 		this.quadro = dados.quadro;
 		this.duracao = dados.duracao;
 		this.estado = dados.estado;
+	}
+
+	receberDano(jogador) {
+		if (this.pose == 'caixote') {
+			this.vida = Math.max(this.vida - jogador.dano, 0);
+			this.quadro = 3 - Math.round((this.vida/this.max_vida) * 3);
+
+			if (this.vida == 0) {
+				this.sortearItem();
+			}
+		}
+	}
+
+	sortearItem() {
+		this.pose = 'item';
+
+		let itens = ['cura', 'velocidade', 'forca'];
+		this.quadro = itens[Math.floor((Math.random() * 3))];
+		this.duracao = performance.now();
+	}
+
+	coletar(partida) {
+		for (let i = 0; i < partida.itens.length; ++i) {
+            if (this.id == partida.itens[i].id) {
+            	partida.itens.splice(i, 1);
+            	break;
+            }
+        }
 	}
 }
 
