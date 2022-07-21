@@ -4,6 +4,7 @@ let tela = 'tela_inicial';
 let modal = null;
 let jogador;
 let jogadores;
+let itens;
 let carregados = 0;
 
 ws.onmessage = (evento) => {
@@ -208,6 +209,7 @@ function verificarJogo(dados) {
     }
     else {
         jogadores = dados.jogadores;
+        itens = dados.itens;
         loop();
     }
 }
@@ -217,7 +219,7 @@ function loop() {
 
     for (let jog of jogadores) {
         if (jog.nome != jogador.nome && jog.pose == 'attack' && jog.quadro >= 5 && jog.quadro <= 7) {
-            if ((jog.x < jogador.x && jog.x + jog.largura >= jogador.x && jog.escala == 1) || jog.x > jogador.x && jogador.x + jogador.largura >= jog.x && jog.escala == -1) {
+            if ((jog.x <= jogador.x && jog.x + jog.largura >= jogador.x && jog.escala == 1) || (jog.x >= jogador.x && jogador.x + jogador.largura >= jog.x && jog.escala == -1)) {
                 jogador.vida = Math.max(jogador.vida - jog.dano, 0);
 
                 if (jogador.vida == 0 && jogador.pose != 'dead') {
@@ -230,13 +232,18 @@ function loop() {
         }
     }
 
-    e.ctx.fillStyle = "#FF0000";
-    e.ctx.fillRect((e.canvas.width / 2) - 100, 10, 200, 25);
+    if (carregados > 86) {
+        for (let item of itens) {
+            let img = e[item.pose][item.quadro];
 
-    e.ctx.fillStyle = "#00FF00";
-    e.ctx.fillRect((e.canvas.width / 2) - 100, 10, (jogador.vida / jogador.max_vida) * 200, 25);
+            e.ctx.save();
+            e.ctx.translate(item.x, item.y);
+            e.ctx.rotate(item.angulo * Math.PI / 180);
+            e.ctx.scale(item.escala, 1);
+            e.ctx.drawImage(img, 0, 0, (item.largura * item.escala), item.altura);
+            e.ctx.restore();
+        }
 
-    if (carregados > 79) {
         for (let jog of jogadores) {
             if (jog.nome != jogador.nome) {
                 let img = e[jog.classe][jog.pose][jog.quadro];
@@ -249,15 +256,15 @@ function loop() {
                 e.ctx.restore();
             }
         }
-    }
 
-    let img = e[jogador.classe][jogador.pose][jogador.quadro];
-    e.ctx.save();
-    e.ctx.translate(jogador.x, jogador.y);
-    e.ctx.rotate(jogador.angulo * Math.PI / 180);
-    e.ctx.scale(jogador.escala, 1);
-    e.ctx.drawImage(img, 0, 0, (jogador.largura * jogador.escala), jogador.altura);
-    e.ctx.restore();
+        let img = e[jogador.classe][jogador.pose][jogador.quadro];
+        e.ctx.save();
+        e.ctx.translate(jogador.x, jogador.y);
+        e.ctx.rotate(jogador.angulo * Math.PI / 180);
+        e.ctx.scale(jogador.escala, 1);
+        e.ctx.drawImage(img, 0, 0, (jogador.largura * jogador.escala), jogador.altura);
+        e.ctx.restore();
+    }
 
     if (performance.now() - jogador.duracao > 20) {
         if (jogador.pose == 'attack' && jogador.quadro == 9) {
@@ -274,6 +281,12 @@ function loop() {
         jogador.duracao = performance.now();
     }
 
+    e.ctx.fillStyle = "#FF0000";
+    e.ctx.fillRect((e.canvas.width / 2) - 100, 10, 200, 25);
+
+    e.ctx.fillStyle = "#00FF00";
+    e.ctx.fillRect((e.canvas.width / 2) - 100, 10, (jogador.vida / jogador.max_vida) * 200, 25);
+
     ws.send(JSON.stringify({
         tipo: 'partida',
         funcao: 'movimentar',
@@ -286,6 +299,7 @@ function loop() {
 
 function verificarMovimentacao(dados) {
     jogadores = dados.jogadores;
+    itens = dados.itens;
 }
 
 function teclou(event) {//console.log(event.key);
@@ -815,6 +829,32 @@ function main() {
         img.addEventListener('load', () => ++carregados, false);
         e.robo.dead.push(img);
     }
+
+    // CAIXOTE
+
+    e.caixote = [];
+    for (let i = 1; i <= 4; ++i) {
+        let img = new Image();
+        img.src = `img/caixote/caixote_00${i}.jpg`;
+        img.addEventListener('load', () => ++carregados, false);
+        e.caixote.push(img);
+    }
+
+    // ITENS
+
+    e.itens = {};
+
+    e.itens.cura = new Image();
+    e.itens.cura.src = `img/itens/cura.png`;
+    e.itens.cura.addEventListener('load', () => ++carregados, false);
+
+    e.itens.velocidade = new Image();
+    e.itens.velocidade.src = `img/itens/velocidade.png`;
+    e.itens.velocidade.addEventListener('load', () => ++carregados, false);
+
+    e.itens.forca = new Image();
+    e.itens.forca.src = `img/itens/forca.png`;
+    e.itens.forca.addEventListener('load', () => ++carregados, false);
 
     document.addEventListener("keydown", teclou);
     document.addEventListener("keyup", desteclou);

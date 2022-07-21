@@ -58,7 +58,8 @@ module.exports = {
 		            funcao: 'listar',
 		            estado: 'sucesso',
 		            mensagem: res.mensagem,
-		            jogadores: partida.getJogadores()
+		            jogadores: partida.getJogadores(),
+		            itens: partida.getItens()
 		        }));
 		    }
 		}
@@ -89,7 +90,8 @@ module.exports = {
 		            funcao: 'movimentar',
 		            estado: 'sucesso',
 		            mensagem: res.mensagem,
-		            jogadores: partida.getJogadores()
+		            jogadores: partida.getJogadores(),
+		            itens: partida.getItens()
 		        }));
 		    }
 		}

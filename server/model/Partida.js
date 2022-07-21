@@ -1,11 +1,13 @@
 const uuid = require('uuid');
 const Estado = require('../enum/EstadoEnum.js');
 const Cargo = require('../enum/CargoEnum.js');
+const Item = require('./Item.js');
 
 class Partida {
     id;
     idsala;
     jogadores;
+    itens;
     vez;
     estado;
 
@@ -13,6 +15,7 @@ class Partida {
         this.id = uuid.v4();
         this.idsala = sala.id;
         this.jogadores = sala.jogadores;
+        this.itens = [];
         this.vez = 0;
         this.estado = Estado.PREPARACAO;
         this.init(sala);
@@ -26,6 +29,28 @@ class Partida {
             jogador.idpartida = this.id;
             jogador.estado = Estado.JOGO;
         }
+
+        this.gerarItens();
+    }
+
+    gerarItens() {
+        for (let i = 0; i < 5; ++i) {
+            let sobreposto;
+            let item;
+
+            do {
+                sobreposto = false;
+                item = new Item();
+
+                for (let itm of this.itens) {
+                    if ((itm.x <= item.x && itm.x + itm.largura > item.x) || (itm.x >= item.x && item.x + item.largura > itm.x)) {
+                        sobreposto = true;
+                    }
+                }
+            } while (sobreposto);
+
+            this.itens.push(item);
+        }
     }
 
     getJogadores() {
@@ -33,6 +58,16 @@ class Partida {
 
         for (let jog of this.jogadores) {
             res.push(jog.get());
+        }
+
+        return res;
+    }
+
+    getItens() {
+        let res = [];
+
+        for (let item of this.itens) {
+            res.push(item.get());
         }
 
         return res;
