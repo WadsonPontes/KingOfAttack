@@ -331,7 +331,7 @@ function loop() {
         }
     }
 
-    if (jogador && performance.now() - jogador.duracao > 20) {
+    if (jogador && performance.now() - jogador.duracao > 30) {
         if (jogador.pose == 'attack' && jogador.quadro == 9) {
             jogador.pose = 'idle';
             jogador.quadro = 0;
@@ -395,7 +395,7 @@ function loop() {
         if (itens) {
             for (let item of itens) {
                 if (item.pose == 'item') {
-                    if (jogador.x + jogador.largura/2 > item.x && jogador.x + jogador.largura/2 < item.x + item.largura) {
+                    if (jogador.x + jogador.largura/2 >= item.x && jogador.x + jogador.largura/2 <= item.x + item.largura) {
                         
                         if (jogador.estado != 10 /* DESCONECTADO */) {
                             iniciarMS();

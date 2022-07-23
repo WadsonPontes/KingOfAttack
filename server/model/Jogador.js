@@ -37,12 +37,12 @@ class Jogador {
 		this.max_vida = 5000;
 		this.vida = 5000;
 		this.dano = 10;
-		this.velocidade = 5;
+		this.velocidade = 10;
 		this.inventario = [];
-		this.x = Math.floor((Math.random() * 2000) + 1);
-		this.y = 80;
 		this.largura = 232;
 		this.altura = 280;
+		this.x = Math.floor((Math.random() * (2000 - this.largura)) + 1);
+		this.y = 80;
 		this.angulo = 0;
 		this.escala = 1;
 		this.pose = 'idle';
