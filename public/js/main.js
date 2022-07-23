@@ -288,8 +288,8 @@ function loop() {
     if (carregados > 89) {
         let img = e.mapa;
         e.ctx.save();
-        e.ctx.translate((e.canvas.width/2) - ((jogador.largura * (e.canvas.width/1920))/2) - (1000 + jogador.x) * (e.canvas.width/1920), (e.canvas.height - (2000 * (e.canvas.width/1920))));
-        e.ctx.drawImage(img, 0, 0, (4000) * (e.canvas.width/1920), 2000 * (e.canvas.width/1920));
+        e.ctx.translate((e.canvas.width/2) - ((jogador.largura * (e.canvas.width/1920))/2) - (1000 + jogador.x) * (e.canvas.width/1920), (e.canvas.height - (6000 * (e.canvas.width/1920))));
+        e.ctx.drawImage(img, 0, 0, (4000) * (e.canvas.width/1920), 6000 * (e.canvas.width/1920));
         e.ctx.restore();
 
         if (itens) {
@@ -427,7 +427,7 @@ function loop() {
         e.ctx.font = `900 ${80 * (e.canvas.width/1920)}px Arial`;
         e.ctx.fillText('DESCONECTADO', e.canvas.width/2, e.canvas.height/2);
         e.ctx.fillStyle = '#fff';
-        e.ctx.font = `900 ${76 * (e.canvas.width/1920)}px Arial`;
+        e.ctx.font = `900 ${77 * (e.canvas.width/1920)}px Arial`;
         e.ctx.fillText('DESCONECTADO', e.canvas.width/2, e.canvas.height/2);
     }
 
