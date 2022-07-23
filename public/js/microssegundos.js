@@ -42,6 +42,8 @@ function resetarMS() {
 
 	if (microssegundos() - v.ms_cumulado_microssegundos >= 1000) {
 		v.ms = Math.round(v.ms_cumulado / Math.max(v.ms_contador, 1));
+		v.ms_cumulado = 0;
+		v.ms_contador = 0;
 		v.ms_cumulado_microssegundos = microssegundos();
 	}
 }
