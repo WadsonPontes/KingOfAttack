@@ -342,18 +342,19 @@ function loop() {
 
     if (jogador) {
         e.ctx.fillStyle = '#FF0000';
-        // e.ctx.fillRect((e.canvas.width / 2) - 100, 10, 200, 25);
-        e.ctx.fillRect(10, 10, 200, 25);
+        e.ctx.fillRect((e.canvas.width / 2) - 100, 10, 200, 25);
+        // e.ctx.fillRect(10, 10, 200, 25);
 
         e.ctx.fillStyle = '#00FF00';
-        // e.ctx.fillRect((e.canvas.width / 2) - 100, 10, (jogador.vida / jogador.max_vida) * 200, 25);
-        e.ctx.fillRect(10, 10, (jogador.vida / jogador.max_vida) * 200, 25);
+        e.ctx.fillRect((e.canvas.width / 2) - 100, 10, (jogador.vida / jogador.max_vida) * 200, 25);
+        // e.ctx.fillRect(10, 10, (jogador.vida / jogador.max_vida) * 200, 25);
 
         for (let i = 0; i < jogador.inventario.length; ++i) {
             let item = jogador.inventario[i];
             let img = e[item.pose][item.quadro];
 
-            e.ctx.drawImage(img, 220 + i * 35, 10, 25, 25);
+            e.ctx.drawImage(img, (e.canvas.width / 2) - (jogador.inventario.length * 33 / 2) + i * 35, 40, 25, 25);
+            // e.ctx.drawImage(img, 220 + i * 35, 10, 25, 25);
         }
 
         e.ctx.textAlign = 'end';
