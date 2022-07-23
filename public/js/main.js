@@ -285,7 +285,7 @@ function loop() {
         }
     }
 
-    if (carregados > 87) {
+    if (carregados > 89) {
         let img = e.mapa;
         e.ctx.save();
         e.ctx.translate((e.canvas.width/2) - ((jogador.largura * (e.canvas.width/1920))/2) - (1000 + jogador.x) * (e.canvas.width/1920), (e.canvas.height - (2000 * (e.canvas.width/1920))));
