@@ -82,6 +82,23 @@ class Partida {
 
         return null;
     }
+
+    delUsuario(jogador) {
+        jogador.idpartida = null;
+
+        let encontrado = false;
+        
+        for (let i = 0; i < this.jogadores.length; ++i) {
+            if (this.jogadores[i].id == jogador.id) {
+                encontrado = true;
+            }
+            else if (encontrado) {
+                this.jogadores[i-1] = this.jogadores[i];
+            }
+        }
+
+        this.jogadores.pop();
+    }
 }
 
 module.exports = Partida;

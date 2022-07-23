@@ -8,7 +8,7 @@ module.exports = {
 	main: (GM, ws, dados, jogador) => {
 		switch (dados.funcao) {
 			case 'listar':
-				GM.PartidaController.listar(GM, ws, dados, jogador);
+				GM.PartidaController.listar(GM, GM.partidas[jogador.idpartida]);
 				break;
 			case 'movimentar':
 				GM.PartidaController.movimentar(GM, ws, dados, jogador);
@@ -49,34 +49,15 @@ module.exports = {
 		}
 	},
 
-	listar: (GM, ws, dados, jogador) => {
-		// let res = GM.Util.validarPrePreparacao(GM, jogador);
-		let partida = GM.partidas[jogador.idpartida];
-		let res = {
-			valido: true,
-			mensagem: ''
-		}
-
-		if (res.valido) {
-			for (let jog of partida.jogadores) {
-		        jog.ws.send(JSON.stringify({
-		            tipo: 'partida',
-		            funcao: 'listar',
-		            estado: 'sucesso',
-		            mensagem: res.mensagem,
-		            jogadores: partida.getJogadores(),
-		            itens: partida.getItens()
-		        }));
-		    }
-		}
-		else {
-			ws.send(JSON.stringify({
-				tipo: 'partida',
-				funcao: 'listar',
-				estado: 'erro',
-				mensagem: res.mensagem
-			}));
-		}
+	listar: (GM, partida) => {
+		for (let jog of partida.jogadores) {
+	        jog.ws.send(JSON.stringify({
+	            tipo: 'partida',
+	            funcao: 'listar',
+	            jogadores: partida.getJogadores(),
+	            itens: partida.getItens()
+	        }));
+	    }
 	},
 
 	movimentar: (GM, ws, dados, jogador) => {
@@ -97,7 +78,7 @@ module.exports = {
 	            mensagem: res.mensagem
 	        }));
 
-	        GM.PartidaController.listar(GM, ws, dados, jogador);
+	        GM.PartidaController.listar(GM, partida);
 		}
 		else {
 			ws.send(JSON.stringify({
@@ -139,7 +120,7 @@ module.exports = {
 	            mensagem: res.mensagem
 	        }));
 
-	        GM.PartidaController.listar(GM, ws, dados, jogador);
+	        GM.PartidaController.listar(GM, partida);
 		}
 		else {
 			ws.send(JSON.stringify({
@@ -172,12 +153,43 @@ module.exports = {
 	            item: item.get()
 	        }));
 
-			GM.PartidaController.listar(GM, ws, dados, jogador);
+			GM.PartidaController.listar(GM, partida);
 		}
 		else {
 			ws.send(JSON.stringify({
 				tipo: 'partida',
 				funcao: 'coletar',
+				estado: 'erro',
+				mensagem: res.mensagem
+			}));
+		}
+	},
+
+	sair: (GM, ws, jogador) => {
+		// let res = GM.Util.validarSairDePartida(GM, jogador);
+		let res = {
+			valido: true,
+			mensagem: ''
+		}
+
+		if (res.valido) {
+			let partida = GM.partidas[jogador.idpartida];
+
+			partida.delUsuario(jogador);
+
+			ws.send(JSON.stringify({
+				tipo: 'partida',
+				funcao: 'sair',
+				estado: 'sucesso',
+				jogador: jogador.get()
+			}));
+
+			GM.PartidaController.listar(GM, partida);
+		}
+		else {
+			ws.send(JSON.stringify({
+				tipo: 'partida',
+				funcao: 'sair',
 				estado: 'erro',
 				mensagem: res.mensagem
 			}));

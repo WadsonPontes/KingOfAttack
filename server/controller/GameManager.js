@@ -30,7 +30,8 @@ module.exports = {
 	    for (let prop in GM.partidas) {
 	    	GM.partidas[prop].jogadores.push(jogador);
 	    	jogador.idpartida = GM.partidas[prop].id;
-	    	jogador.estado = 6;
+	    	jogador.idsala = GM.partidas[prop].idsala;
+	    	jogador.estado = Estado.JOGO;
 	    	encontrado = true;
 	    	break;
 	    }
@@ -85,6 +86,10 @@ module.exports = {
 	        case Estado.SALA:
 	            SalaController.sairOuDel(GM, jogador.ws, jogador);
 	            break;
+	        case Estado.JOGO:
+	        	PartidaController.sair(GM, jogador.ws, jogador);
+	            SalaController.sair(GM, jogador.ws, jogador);
+	            break;
 	        default:
 	            break;
 	    }
@@ -108,6 +113,10 @@ module.exports = {
 	    switch (jogador.estado) {
 	        case Estado.SALA:
 	        	SalaController.sairOuDel(GM, jogador.ws, jogador);
+	            break;
+	        case Estado.JOGO:
+	        	PartidaController.sair(GM, jogador.ws, jogador);
+	            SalaController.sair(GM, jogador.ws, jogador);
 	            break;
 	        default:
 	            break;

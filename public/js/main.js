@@ -222,13 +222,8 @@ function carregarJogo() {
 }
 
 function verificarJogo(dados) {
-    if (dados.estado == 'erro') {
-        e.erro_jogo.textContent = dados.mensagem;
-    }
-    else {
-        jogadores = dados.jogadores;
-        itens = dados.itens;
-    }
+    jogadores = dados.jogadores;
+    itens = dados.itens;
 }
 
 function verificarMovimentacao(dados) {
