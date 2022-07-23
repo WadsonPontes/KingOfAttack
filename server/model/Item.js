@@ -31,8 +31,8 @@ class Item {
 		this.cura = 2000;
 		this.velocidade = 10;
 		this.forca = 10;
-		this.x = Math.floor((Math.random() * 800) + 1);
-		this.y = 90; // Math.floor((Math.random() * 800) + 1);
+		this.x = Math.floor((Math.random() * 2000) + 1);
+		this.y = 90;
 		this.largura = 100;
 		this.altura = 100;
 		this.angulo = 0;

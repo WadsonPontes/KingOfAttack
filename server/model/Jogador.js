@@ -39,8 +39,8 @@ class Jogador {
 		this.dano = 10;
 		this.velocidade = 5;
 		this.inventario = [];
-		this.x = Math.floor((Math.random() * 800) + 1);
-		this.y = 80; // Math.floor((Math.random() * 800) + 1);
+		this.x = Math.floor((Math.random() * 2000) + 1);
+		this.y = 80;
 		this.largura = 232;
 		this.altura = 280;
 		this.angulo = 0;

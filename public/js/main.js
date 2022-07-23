@@ -459,14 +459,14 @@ function teclou(event) {
 
                     case 'a':
                     case 'ArrowLeft':
-                        jogador.x -= jogador.velocidade;
+                        jogador.x = Math.max(jogador.x - jogador.velocidade, 0);
                         jogador.escala = -1;
                         jogador.pose = 'walk';
                         break;
 
                     case 'd':
                     case 'ArrowRight':
-                        jogador.x += jogador.velocidade;
+                        jogador.x = Math.min(jogador.x + jogador.velocidade, 2000 - jogador.largura);
                         jogador.escala = 1;
                         jogador.pose = 'walk';
                         break;
