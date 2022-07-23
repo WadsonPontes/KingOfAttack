@@ -291,10 +291,10 @@ function loop() {
                 let img = e[item.pose][item.quadro];
 
                 e.ctx.save();
-                e.ctx.translate(item.x, item.y);
+                e.ctx.translate((e.canvas.width/2) - ((jogador.largura * (e.canvas.width/1920))/2) + (item.x - jogador.x) * (e.canvas.width/1920), (e.canvas.height - (item.altura * (e.canvas.width/1920)) - item.y));
                 e.ctx.rotate(item.angulo * Math.PI / 180);
                 e.ctx.scale(item.escala, 1);
-                e.ctx.drawImage(img, 0, 0, (item.largura * item.escala), item.altura);
+                e.ctx.drawImage(img, 0, 0, (item.largura * item.escala) * (e.canvas.width/1920), item.altura * (e.canvas.width/1920));
                 e.ctx.restore();
             }
         }
@@ -305,10 +305,10 @@ function loop() {
                     let img = e[jog.classe][jog.pose][jog.quadro];
 
                     e.ctx.save();
-                    e.ctx.translate(jog.x, jog.y);
+                    e.ctx.translate((e.canvas.width/2) - ((jogador.largura * (e.canvas.width/1920))/2) + (jog.x - jogador.x) * (e.canvas.width/1920), (e.canvas.height - (jog.altura * (e.canvas.width/1920)) - jog.y));
                     e.ctx.rotate(jog.angulo * Math.PI / 180);
                     e.ctx.scale(jog.escala, 1);
-                    e.ctx.drawImage(img, 0, 0, (jog.largura * jog.escala), jog.altura);
+                    e.ctx.drawImage(img, 0, 0, (jog.largura * jog.escala) * (e.canvas.width/1920), jog.altura * (e.canvas.width/1920));
                     e.ctx.restore();
                 }
             }
@@ -317,10 +317,10 @@ function loop() {
         if (jogador) {
             let img = e[jogador.classe][jogador.pose][jogador.quadro];
             e.ctx.save();
-            e.ctx.translate(jogador.x, jogador.y);
+            e.ctx.translate((e.canvas.width/2) - ((jogador.largura * (e.canvas.width/1920))/2), (e.canvas.height - (jogador.altura * (e.canvas.width/1920)) - jogador.y));
             e.ctx.rotate(jogador.angulo * Math.PI / 180);
             e.ctx.scale(jogador.escala, 1);
-            e.ctx.drawImage(img, 0, 0, (jogador.largura * jogador.escala), jogador.altura);
+            e.ctx.drawImage(img, 0, 0, (jogador.largura * jogador.escala) * (e.canvas.width/1920), jogador.altura * (e.canvas.width/1920));
             e.ctx.restore();
         }
     }
@@ -445,17 +445,17 @@ function teclou(event) {
 
             case 6: /* JOGO */ {
                 switch (event.key) {
-                    case 'w':
-                    case 'ArrowUp':
-                        jogador.y -= jogador.velocidade;
-                        jogador.pose = 'walk';
-                        break;
+                    // case 'w':
+                    // case 'ArrowUp':
+                    //     jogador.y -= jogador.velocidade;
+                    //     jogador.pose = 'walk';
+                    //     break;
 
-                    case 's':
-                    case 'ArrowDown':
-                        jogador.y += jogador.velocidade;
-                        jogador.pose = 'walk';
-                        break;
+                    // case 's':
+                    // case 'ArrowDown':
+                    //     jogador.y += jogador.velocidade;
+                    //     jogador.pose = 'walk';
+                    //     break;
 
                     case 'a':
                     case 'ArrowLeft':
@@ -782,6 +782,11 @@ function mudarPara(nova) {
     }
 }
 
+function redimensionar() {
+    e.canvas.width = window.innerWidth;
+    e.canvas.height = window.innerHeight;
+}
+
 function main() {
     e.tela_inicial = document.querySelector('#tela-inicial');
     e.tela_saguao = document.querySelector('#tela-saguao');
@@ -831,9 +836,8 @@ function main() {
     e.comando_jogo = document.querySelector('#comando-jogo');
 
     e.canvas = document.querySelector('canvas');
-    e.canvas.width = window.innerWidth;
-    e.canvas.height = window.innerHeight;
     e.ctx = e.canvas.getContext('2d');
+    redimensionar();
 
     // CAVALEIRO
 
@@ -1009,6 +1013,7 @@ function main() {
 
     document.addEventListener('keydown', teclou);
     document.addEventListener('keyup', desteclou);
+    window.addEventListener('resize', redimensionar);
 }
 
 main();

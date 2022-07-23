@@ -32,9 +32,9 @@ class Item {
 		this.velocidade = 10;
 		this.forca = 10;
 		this.x = Math.floor((Math.random() * 800) + 1);
-		this.y = 660; // Math.floor((Math.random() * 800) + 1);
-		this.largura = 70;
-		this.altura = 70;
+		this.y = 90; // Math.floor((Math.random() * 800) + 1);
+		this.largura = 100;
+		this.altura = 100;
 		this.angulo = 0;
 		this.escala = 1;
 		this.pose = 'caixote';

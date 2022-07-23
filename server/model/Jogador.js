@@ -40,9 +40,9 @@ class Jogador {
 		this.velocidade = 5;
 		this.inventario = [];
 		this.x = Math.floor((Math.random() * 800) + 1);
-		this.y = 600; // Math.floor((Math.random() * 800) + 1);
-		this.largura = 116;
-		this.altura = 140;
+		this.y = 80; // Math.floor((Math.random() * 800) + 1);
+		this.largura = 232;
+		this.altura = 280;
 		this.angulo = 0;
 		this.escala = 1;
 		this.pose = 'idle';
