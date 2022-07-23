@@ -64,7 +64,6 @@ module.exports = {
 		            funcao: 'listar',
 		            estado: 'sucesso',
 		            mensagem: res.mensagem,
-		            jogador: jogador.get(),
 		            jogadores: partida.getJogadores(),
 		            itens: partida.getItens()
 		        }));
@@ -91,17 +90,14 @@ module.exports = {
 		jogador.set(dados.jogador);
 
 		if (res.valido) {
-			for (let jog of partida.jogadores) {
-		        jog.ws.send(JSON.stringify({
-		            tipo: 'partida',
-		            funcao: 'movimentar',
-		            estado: 'sucesso',
-		            mensagem: res.mensagem,
-		            jogador: jogador.get(),
-		            jogadores: partida.getJogadores(),
-		            itens: partida.getItens()
-		        }));
-		    }
+			jogador.ws.send(JSON.stringify({
+	            tipo: 'partida',
+	            funcao: 'movimentar',
+	            estado: 'sucesso',
+	            mensagem: res.mensagem
+	        }));
+
+	        GM.PartidaController.listar(GM, ws, dados, jogador);
 		}
 		else {
 			ws.send(JSON.stringify({
@@ -135,18 +131,15 @@ module.exports = {
 		if (item) item.receberDano(jogador);
 
 		if (item && res.valido) {
-			for (let jog of partida.jogadores) {
-		        jog.ws.send(JSON.stringify({
-		            tipo: 'partida',
-		            funcao: 'dano',
-		            subfuncao: 'jogador_em_item',
-		            estado: 'sucesso',
-		            mensagem: res.mensagem,
-		            jogador: jogador.get(),
-		            jogadores: partida.getJogadores(),
-		            itens: partida.getItens()
-		        }));
-		    }
+			jogador.ws.send(JSON.stringify({
+	            tipo: 'partida',
+	            funcao: 'dano',
+	            subfuncao: 'jogador_em_item',
+	            estado: 'sucesso',
+	            mensagem: res.mensagem
+	        }));
+
+	        GM.PartidaController.listar(GM, ws, dados, jogador);
 		}
 		else {
 			ws.send(JSON.stringify({
@@ -171,18 +164,15 @@ module.exports = {
 		if (item && performance.now() - item.duracao > 1000) item.coletar(partida);
 
 		if (item && performance.now() - item.duracao > 1000 && res.valido) {
-			for (let jog of partida.jogadores) {
-		        jog.ws.send(JSON.stringify({
-		            tipo: 'partida',
-		            funcao: 'coletar',
-		            estado: 'sucesso',
-		            mensagem: res.mensagem,
-		            jogador: jogador.get(),
-		            jogadores: partida.getJogadores(),
-		            itens: partida.getItens(),
-		            item: item.get()
-		        }));
-		    }
+			jogador.ws.send(JSON.stringify({
+	            tipo: 'partida',
+	            funcao: 'coletar',
+	            estado: 'sucesso',
+	            mensagem: res.mensagem,
+	            item: item.get()
+	        }));
+
+			GM.PartidaController.listar(GM, ws, dados, jogador);
 		}
 		else {
 			ws.send(JSON.stringify({
@@ -192,5 +182,5 @@ module.exports = {
 				mensagem: res.mensagem
 			}));
 		}
-	},
+	}
 }

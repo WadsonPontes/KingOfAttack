@@ -27,8 +27,8 @@ class Item {
 		this.id = uuid.v4();
 		this.nome = 'caixote';
 		this.max_vida = 1000;
-		this.vida = 1000;
-		this.cura = 5000;
+		this.vida = 700;
+		this.cura = 2000;
 		this.velocidade = 10;
 		this.forca = 10;
 		this.x = Math.floor((Math.random() * 800) + 1);

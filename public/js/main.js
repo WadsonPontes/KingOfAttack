@@ -1,4 +1,4 @@
-const ws = new WebSocket("ws://" + location.host);
+const ws = new WebSocket('ws://' + location.host);
 let e = {};
 let tela = 'tela_inicial';
 let modal = null;
@@ -9,6 +9,7 @@ let carregados = 0;
 
 ws.onmessage = (evento) => {
     const dados = JSON.parse(evento.data);
+    resetarMS();
 
     switch (dados.tipo) {
         case 'conexao':
@@ -39,10 +40,12 @@ ws.onmessage = (evento) => {
 }
 
 ws.onerror = (erro) => {
+    if (jogador) jogador.estado = 10 // DESCONECTADO;
     console.log(`Erro na conexão: ${erro}`);
 }
 
 ws.onclose = (id, descricao) => {
+    if (jogador) jogador.estado = 10 // DESCONECTADO;
     console.log(`Conexão fechada: ${id} - ${descricao}`);
 }
 
@@ -137,6 +140,7 @@ function entrarEmSala(nome) {
         nome = e.campo_nome_entrar_sala.value;
         let codigo = e.campo_codigo_entrar_sala.value;
 
+        iniciarMS();
         ws.send(JSON.stringify({
             tipo: 'sala',
             funcao: 'entrar',
@@ -148,6 +152,7 @@ function entrarEmSala(nome) {
         nome = e.campo_nome_entrar_sala_oculta.value;
         let codigo = e.campo_codigo_entrar_sala_oculta.value;
 
+        iniciarMS();
         ws.send(JSON.stringify({
             tipo: 'sala',
             funcao: 'entrar',
@@ -158,6 +163,7 @@ function entrarEmSala(nome) {
     else {
         e.campo_nome_entrar_sala.value = nome;
 
+        iniciarMS();
         ws.send(JSON.stringify({
             tipo: 'sala',
             funcao: 'entrar',
@@ -167,6 +173,7 @@ function entrarEmSala(nome) {
 }
 
 function sairDaSala() {
+    iniciarMS();
     ws.send(JSON.stringify({
         tipo: 'sala',
         funcao: 'sair'
@@ -174,6 +181,7 @@ function sairDaSala() {
 }
 
 function deletarSala() {
+    iniciarMS();
     ws.send(JSON.stringify({
         tipo: 'sala',
         funcao: 'deletar'
@@ -181,6 +189,7 @@ function deletarSala() {
 }
 
 function carregarSala() {
+    iniciarMS();
     ws.send(JSON.stringify({
         tipo: 'sala',
         funcao: 'listar'
@@ -188,6 +197,7 @@ function carregarSala() {
 }
 
 function carregarSaguao() {
+    iniciarMS();
     ws.send(JSON.stringify({
         tipo: 'saguao',
         funcao: 'listar'
@@ -195,6 +205,7 @@ function carregarSaguao() {
 }
 
 function carregarPreparacao() {
+    iniciarMS();
     ws.send(JSON.stringify({
         tipo: 'preparacao',
         funcao: 'listar'
@@ -202,6 +213,8 @@ function carregarPreparacao() {
 }
 
 function carregarJogo() {
+    iniciarMS();
+    loop();
     ws.send(JSON.stringify({
         tipo: 'partida',
         funcao: 'listar'
@@ -213,17 +226,18 @@ function verificarJogo(dados) {
         e.erro_jogo.textContent = dados.mensagem;
     }
     else {
-        jogador = dados.jogador;
         jogadores = dados.jogadores;
         itens = dados.itens;
-        loop();
     }
 }
 
 function verificarMovimentacao(dados) {
-    // jogador = dados.jogador;
-    jogadores = dados.jogadores;
-    itens = dados.itens;
+    if (dados.estado == 'erro') {
+        e.erro_jogo.textContent = dados.mensagem;
+    }
+    else {
+        
+    }
 }
 
 function verificarColetar(dados) {
@@ -231,10 +245,8 @@ function verificarColetar(dados) {
         e.erro_jogo.textContent = dados.mensagem;
     }
     else {
-        // jogador = dados.jogador;
-        jogadores = dados.jogadores;
-        itens = dados.itens;
         let item = dados.item;
+        jogador.inventario.push(item);
 
         switch (item.quadro) {
             case 'cura':
@@ -253,58 +265,67 @@ function verificarColetar(dados) {
 }
 
 function loop() {
+    contar();
     e.ctx.clearRect(0, 0, e.canvas.width, e.canvas.height);
 
-    for (let jog of jogadores) {
-        if (jog.nome != jogador.nome && jog.pose == 'attack' && jog.quadro >= 5 && jog.quadro <= 7) {
-            if ((jog.x + jog.largura/2 > jogador.x && jog.x + jog.largura/2 < jogador.x + jogador.largura) || (jog.escala == 1 && jog.x + jog.largura > jogador.x && jog.x + jog.largura < jogador.x + jogador.largura) || (jog.escala == -1 && jog.x < jogador.x + jogador.largura && jog.x > jogador.x)) {
-                jogador.vida = Math.max(jogador.vida - jog.dano, 0);
+    if (jogadores) {
+        for (let jog of jogadores) {
+            if (jog.nome != jogador.nome && jog.pose == 'attack' && jog.quadro >= 5 && jog.quadro <= 7) {
+                if ((jog.x + jog.largura/2 > jogador.x && jog.x + jog.largura/2 < jogador.x + jogador.largura) || (jog.escala == 1 && jog.x + jog.largura > jogador.x && jog.x + jog.largura < jogador.x + jogador.largura) || (jog.escala == -1 && jog.x < jogador.x + jogador.largura && jog.x > jogador.x)) {
+                    jogador.vida = Math.max(jogador.vida - jog.dano, 0);
 
-                if (jogador.vida == 0 && jogador.pose != 'dead') {
-                    jogador.pose = 'dead';
-                    jogador.quadro = 0;
-                    jogador.escala = -jog.escala;
-                    jogador.estado = 12; // DERROTADO
+                    if (jogador.vida == 0 && jogador.pose != 'dead') {
+                        jogador.pose = 'dead';
+                        jogador.quadro = 0;
+                        jogador.escala = -jog.escala;
+                        jogador.estado = 12; // DERROTADO
+                    }
                 }
             }
         }
     }
 
     if (carregados > 86) {
-        for (let item of itens) {
-            let img = e[item.pose][item.quadro];
-
-            e.ctx.save();
-            e.ctx.translate(item.x, item.y);
-            e.ctx.rotate(item.angulo * Math.PI / 180);
-            e.ctx.scale(item.escala, 1);
-            e.ctx.drawImage(img, 0, 0, (item.largura * item.escala), item.altura);
-            e.ctx.restore();
-        }
-
-        for (let jog of jogadores) {
-            if (jog.nome != jogador.nome) {
-                let img = e[jog.classe][jog.pose][jog.quadro];
+        if (itens) {
+            for (let item of itens) {
+                let img = e[item.pose][item.quadro];
 
                 e.ctx.save();
-                e.ctx.translate(jog.x, jog.y);
-                e.ctx.rotate(jog.angulo * Math.PI / 180);
-                e.ctx.scale(jog.escala, 1);
-                e.ctx.drawImage(img, 0, 0, (jog.largura * jog.escala), jog.altura);
+                e.ctx.translate(item.x, item.y);
+                e.ctx.rotate(item.angulo * Math.PI / 180);
+                e.ctx.scale(item.escala, 1);
+                e.ctx.drawImage(img, 0, 0, (item.largura * item.escala), item.altura);
                 e.ctx.restore();
             }
         }
 
-        let img = e[jogador.classe][jogador.pose][jogador.quadro];
-        e.ctx.save();
-        e.ctx.translate(jogador.x, jogador.y);
-        e.ctx.rotate(jogador.angulo * Math.PI / 180);
-        e.ctx.scale(jogador.escala, 1);
-        e.ctx.drawImage(img, 0, 0, (jogador.largura * jogador.escala), jogador.altura);
-        e.ctx.restore();
+        if (jogadores) {
+            for (let jog of jogadores) {
+                if (jog.nome != jogador.nome) {
+                    let img = e[jog.classe][jog.pose][jog.quadro];
+
+                    e.ctx.save();
+                    e.ctx.translate(jog.x, jog.y);
+                    e.ctx.rotate(jog.angulo * Math.PI / 180);
+                    e.ctx.scale(jog.escala, 1);
+                    e.ctx.drawImage(img, 0, 0, (jog.largura * jog.escala), jog.altura);
+                    e.ctx.restore();
+                }
+            }
+        }
+
+        if (jogador) {
+            let img = e[jogador.classe][jogador.pose][jogador.quadro];
+            e.ctx.save();
+            e.ctx.translate(jogador.x, jogador.y);
+            e.ctx.rotate(jogador.angulo * Math.PI / 180);
+            e.ctx.scale(jogador.escala, 1);
+            e.ctx.drawImage(img, 0, 0, (jogador.largura * jogador.escala), jogador.altura);
+            e.ctx.restore();
+        }
     }
 
-    if (performance.now() - jogador.duracao > 20) {
+    if (jogador && performance.now() - jogador.duracao > 20) {
         if (jogador.pose == 'attack' && jogador.quadro == 9) {
             jogador.pose = 'idle';
             jogador.quadro = 0;
@@ -319,135 +340,194 @@ function loop() {
         jogador.duracao = performance.now();
     }
 
-    e.ctx.fillStyle = "#FF0000";
-    e.ctx.fillRect((e.canvas.width / 2) - 100, 10, 200, 25);
+    if (jogador) {
+        e.ctx.fillStyle = '#FF0000';
+        // e.ctx.fillRect((e.canvas.width / 2) - 100, 10, 200, 25);
+        e.ctx.fillRect(10, 10, 200, 25);
 
-    e.ctx.fillStyle = "#00FF00";
-    e.ctx.fillRect((e.canvas.width / 2) - 100, 10, (jogador.vida / jogador.max_vida) * 200, 25);
+        e.ctx.fillStyle = '#00FF00';
+        // e.ctx.fillRect((e.canvas.width / 2) - 100, 10, (jogador.vida / jogador.max_vida) * 200, 25);
+        e.ctx.fillRect(10, 10, (jogador.vida / jogador.max_vida) * 200, 25);
 
-    if (jogador.pose == 'attack' && jogador.quadro >= 5 && jogador.quadro <= 7) {
-        for (let item of itens) {
-            if (item.pose == 'caixote') {
-                if ((jogador.x + jogador.largura/2 > item.x && jogador.x + jogador.largura/2 < item.x + item.largura) || (jogador.escala == 1 && jogador.x + jogador.largura > item.x && jogador.x + jogador.largura < item.x + item.largura) || (jogador.escala == -1 && jogador.x < item.x + item.largura && jogador.x > item.x)) {
+        for (let i = 0; i < jogador.inventario.length; ++i) {
+            let item = jogador.inventario[i];
+            let img = e[item.pose][item.quadro];
 
-                    ws.send(JSON.stringify({
-                        tipo: 'partida',
-                        funcao: 'dano',
-                        subfuncao: 'jogador_em_item',
-                        jogador: jogador,
-                        item: item
-                    }));
+            e.ctx.drawImage(img, 220 + i * 35, 10, 25, 25);
+        }
+
+        e.ctx.textAlign = 'end';
+        e.ctx.textBaseline = 'top';
+        e.ctx.fillStyle = '#fff';
+        e.ctx.font = '900 15px Arial';
+        e.ctx.fillText(`FPS: ${fps()}`, e.canvas.width - 100, 10);
+        e.ctx.fillText(`${ms()} ms`, e.canvas.width - 10, 10);
+
+        if (jogador.pose == 'attack' && jogador.quadro >= 5 && jogador.quadro <= 7) {
+            if (itens) {
+                for (let item of itens) {
+                    if (item.pose == 'caixote') {
+                        if ((jogador.x + jogador.largura/2 > item.x && jogador.x + jogador.largura/2 < item.x + item.largura) || (jogador.escala == 1 && jogador.x + jogador.largura > item.x && jogador.x + jogador.largura < item.x + item.largura) || (jogador.escala == -1 && jogador.x < item.x + item.largura && jogador.x > item.x)) {
+
+                            if (jogador.estado != 10 /* DESCONECTADO */) {
+                                iniciarMS();
+                                ws.send(JSON.stringify({
+                                    tipo: 'partida',
+                                    funcao: 'dano',
+                                    subfuncao: 'jogador_em_item',
+                                    jogador: jogador,
+                                    item: item
+                                }));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (itens) {
+            for (let item of itens) {
+                if (item.pose == 'item') {
+                    if (jogador.x + jogador.largura/2 > item.x && jogador.x + jogador.largura/2 < item.x + item.largura) {
+                        
+                        if (jogador.estado != 10 /* DESCONECTADO */) {
+                            iniciarMS();
+                            ws.send(JSON.stringify({
+                                tipo: 'partida',
+                                funcao: 'coletar',
+                                jogador: jogador,
+                                item: item
+                            }));
+                        }
+                    }
                 }
             }
         }
     }
 
-    for (let item of itens) {
-        if (item.pose == 'item') {
-            if (jogador.x + jogador.largura/2 > item.x && jogador.x + jogador.largura/2 < item.x + item.largura) {
-
-                ws.send(JSON.stringify({
-                    tipo: 'partida',
-                    funcao: 'coletar',
-                    jogador: jogador,
-                    item: item
-                }));
-            }
-        }
+    if (jogador && jogador.estado != 10 /* DESCONECTADO */) {
+        iniciarMS();
+        ws.send(JSON.stringify({
+            tipo: 'partida',
+            funcao: 'movimentar',
+            jogador: jogador
+        }));
+    }
+    else if (jogador && jogador.estado == 10 /* DESCONECTADO */) {
+        e.ctx.textAlign = 'center';
+        e.ctx.textBaseline = 'middle';
+        e.ctx.fillStyle = '#000';
+        e.ctx.font = '900 80px Arial';
+        e.ctx.fillText('DESCONECTADO', e.canvas.width/2, e.canvas.height/2);
+        e.ctx.fillStyle = '#fff';
+        e.ctx.font = '900 76px Arial';
+        e.ctx.fillText('DESCONECTADO', e.canvas.width/2, e.canvas.height/2);
     }
 
-    ws.send(JSON.stringify({
-        tipo: 'partida',
-        funcao: 'movimentar',
-        jogador: jogador
-    }));
-
-    // window.requestAnimationFrame(loop);
-    setTimeout(loop, 0);
+    window.requestAnimationFrame(loop);
+    // setTimeout(loop, 0);
 }
 
-function teclou(event) {//console.log(event.key);
-    switch (jogador.estado) {
-        case 1: /* INICIAL */ {
-            switch (event.key) {
-                case "Enter":
-                    entrarNoJogo();
-                    break;
-                default:
-                    break;
-            }
-            break;
-        }
-
-        case 6: /* JOGO */ {
-            switch (event.key) {
-                case "w":
-                case "ArrowUp":
-                    jogador.y -= jogador.velocidade;
-                    jogador.pose = 'walk';
-                    break;
-
-                case "s":
-                case "ArrowDown":
-                    jogador.y += jogador.velocidade;
-                    jogador.pose = 'walk';
-                    break;
-
-                case "a":
-                case "ArrowLeft":
-                    jogador.x -= jogador.velocidade;
-                    jogador.escala = -1;
-                    jogador.pose = 'walk';
-                    break;
-
-                case "d":
-                case "ArrowRight":
-                    jogador.x += jogador.velocidade;
-                    jogador.escala = 1;
-                    jogador.pose = 'walk';
-                    break;
-
-                case " ":
-                    jogador.pose = 'attack';
-                    break;
-
-                default:
-                    break;
+function teclou(event) {
+    if (jogador && jogador.escala != 10 /* DESCONECTADO */) {
+        switch (jogador.estado) {
+            case 1: /* INICIAL */ {
+                switch (event.key) {
+                    case 'Enter':
+                        entrarNoJogo();
+                        break;
+                    default:
+                        break;
+                }
+                break;
             }
 
-            break;
-        }
+            case 6: /* JOGO */ {
+                switch (event.key) {
+                    case 'w':
+                    case 'ArrowUp':
+                        jogador.y -= jogador.velocidade;
+                        jogador.pose = 'walk';
+                        break;
 
-        default: {
-            break;
+                    case 's':
+                    case 'ArrowDown':
+                        jogador.y += jogador.velocidade;
+                        jogador.pose = 'walk';
+                        break;
+
+                    case 'a':
+                    case 'ArrowLeft':
+                        jogador.x -= jogador.velocidade;
+                        jogador.escala = -1;
+                        jogador.pose = 'walk';
+                        break;
+
+                    case 'd':
+                    case 'ArrowRight':
+                        jogador.x += jogador.velocidade;
+                        jogador.escala = 1;
+                        jogador.pose = 'walk';
+                        break;
+
+                    case ' ':
+                        jogador.pose = 'attack';
+                        break;
+
+                    default:
+                        break;
+                }
+
+                iniciarMS();
+                ws.send(JSON.stringify({
+                    tipo: 'partida',
+                    funcao: 'movimentar',
+                    jogador: jogador
+                }));
+
+                break;
+            }
+
+            default: {
+                break;
+            }
         }
     }
 }
 
 function desteclou(event) {
-    switch (jogador.estado) {
-        case 6: /* JOGO */ {
-            switch (event.key) {
-                case "w":
-                case "ArrowUp":
-                case "s":
-                case "ArrowDown":
-                case "a":
-                case "ArrowLeft":
-                case "d":
-                case "ArrowRight":
-                    jogador.pose = 'idle';
-                    break;
+    if (jogador && jogador.escala != 10 /* DESCONECTADO */) {
+        switch (jogador.estado) {
+            case 6: /* JOGO */ {
+                switch (event.key) {
+                    case 'w':
+                    case 'ArrowUp':
+                    case 's':
+                    case 'ArrowDown':
+                    case 'a':
+                    case 'ArrowLeft':
+                    case 'd':
+                    case 'ArrowRight':
+                        jogador.pose = 'idle';
+                        break;
 
-                default:
-                    break;
+                    default:
+                        break;
+                }
+
+                iniciarMS();
+                ws.send(JSON.stringify({
+                    tipo: 'partida',
+                    funcao: 'movimentar',
+                    jogador: jogador
+                }));
+
+                break;
             }
 
-            break;
-        }
-
-        default: {
-            break;
+            default: {
+                break;
+            }
         }
     }
 }
@@ -475,6 +555,7 @@ function verificarPronto(dados) {
     jogador = dados.jogador;
     e.comando_preparacao.textContent = dados.mensagem;
 
+    iniciarMS();
     ws.send(JSON.stringify({
         tipo: 'preparacao',
         funcao: 'finalizar'
@@ -544,6 +625,7 @@ function listarPreparacao(mensagem) {
 function pronto() {
     e.botao_pronto.disabled = true;
 
+    iniciarMS();
     ws.send(JSON.stringify({
         tipo: 'preparacao',
         funcao: 'pronto'
@@ -551,6 +633,7 @@ function pronto() {
 }
 
 function posicionarEsquadra(i, j) {
+    iniciarMS();
     ws.send(JSON.stringify({
         tipo: 'preparacao',
         funcao: 'posicionar',
@@ -630,6 +713,7 @@ function verificarDeletarSala(dados) {
 function entrarNoJogo() {
     let nome = e.campo_nome.value;
 
+    iniciarMS();
     ws.send(JSON.stringify({
         tipo: 'entrar', 
         nome: nome
@@ -637,6 +721,7 @@ function entrarNoJogo() {
 }
 
 function jogar() {
+    iniciarMS();
     ws.send(JSON.stringify({
         tipo: 'jogar'
     }));
@@ -647,6 +732,7 @@ function criarSala() {
     let codigo = e.campo_codigo_criar_sala.value;
     let listada = (e.campo_visibilidade_criar_sala.value === 'true');
 
+    iniciarMS();
     ws.send(JSON.stringify({
         tipo: 'sala',
         funcao: 'criar',
@@ -746,7 +832,7 @@ function main() {
     e.canvas = document.querySelector('canvas');
     e.canvas.width = window.innerWidth;
     e.canvas.height = window.innerHeight;
-    e.ctx = e.canvas.getContext("2d");
+    e.ctx = e.canvas.getContext('2d');
 
     // CAVALEIRO
 
@@ -920,8 +1006,8 @@ function main() {
     e.item.forca.src = `img/itens/forca.png`;
     e.item.forca.addEventListener('load', () => ++carregados, false);
 
-    document.addEventListener("keydown", teclou);
-    document.addEventListener("keyup", desteclou);
+    document.addEventListener('keydown', teclou);
+    document.addEventListener('keyup', desteclou);
 }
 
 main();
