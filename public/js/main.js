@@ -285,7 +285,13 @@ function loop() {
         }
     }
 
-    if (carregados > 86) {
+    if (carregados > 87) {
+        let img = e.mapa;
+        e.ctx.save();
+        e.ctx.translate((e.canvas.width/2) - ((jogador.largura * (e.canvas.width/1920))/2) - (1000 + jogador.x) * (e.canvas.width/1920), (e.canvas.height - (2000 * (e.canvas.width/1920))));
+        e.ctx.drawImage(img, 0, 0, (4000) * (e.canvas.width/1920), 2000 * (e.canvas.width/1920));
+        e.ctx.restore();
+
         if (itens) {
             for (let item of itens) {
                 let img = e[item.pose][item.quadro];
@@ -1010,6 +1016,12 @@ function main() {
     e.item.forca = new Image();
     e.item.forca.src = `img/itens/forca.png`;
     e.item.forca.addEventListener('load', () => ++carregados, false);
+
+    // MAPA
+
+    e.mapa = new Image();
+    e.mapa.src = `img/mapa/mapa.png`;
+    e.mapa.addEventListener('load', () => ++carregados, false);
 
     document.addEventListener('keydown', teclou);
     document.addEventListener('keyup', desteclou);
