@@ -360,8 +360,8 @@ function loop() {
         e.ctx.textAlign = 'end';
         e.ctx.textBaseline = 'top';
         e.ctx.fillStyle = '#fff';
-        e.ctx.font = '900 15px Arial';
-        e.ctx.fillText(`FPS: ${fps()}`, e.canvas.width - 100, 10);
+        e.ctx.font = `900 ${Math.min(Math.max(18 * (e.canvas.width/1920), 12), 18)}px Arial`;
+        e.ctx.fillText(`FPS: ${fps()}`, e.canvas.width - 50 - (50 * ((e.canvas.width)/1920)), 10);
         e.ctx.fillText(`${ms()} ms`, e.canvas.width - 10, 10);
 
         if (jogador.pose == 'attack' && jogador.quadro >= 5 && jogador.quadro <= 7) {
@@ -418,10 +418,10 @@ function loop() {
         e.ctx.textAlign = 'center';
         e.ctx.textBaseline = 'middle';
         e.ctx.fillStyle = '#000';
-        e.ctx.font = '900 80px Arial';
+        e.ctx.font = `900 ${80 * (e.canvas.width/1920)}px Arial`;
         e.ctx.fillText('DESCONECTADO', e.canvas.width/2, e.canvas.height/2);
         e.ctx.fillStyle = '#fff';
-        e.ctx.font = '900 76px Arial';
+        e.ctx.font = `900 ${76 * (e.canvas.width/1920)}px Arial`;
         e.ctx.fillText('DESCONECTADO', e.canvas.width/2, e.canvas.height/2);
     }
 
