@@ -39,10 +39,21 @@ class Jogador {
 		this.dano = 10;
 		this.velocidade = 10;
 		this.inventario = [];
-		this.largura = 232;
-		this.altura = 280;
+		
+
+		if (this.classe == 'cavaleiro' || this.classe == 'robo') {
+			this.largura = 232;
+			this.altura = 280;
+			this.y = 70;
+		}
+		else {
+			this.largura = 121;
+			this.altura = 220;
+			this.y = 90;
+		}
+
 		this.x = Math.floor((Math.random() * (2000 - this.largura)) + 1);
-		this.y = 80;
+		
 		this.angulo = 0;
 		this.escala = 1;
 		this.pose = 'idle';
