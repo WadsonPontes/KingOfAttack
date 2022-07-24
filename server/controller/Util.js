@@ -116,6 +116,14 @@ module.exports = {
 			res.mensagem = 'Número de jogadores acima do permitido';
 		}
 
+		for (let jog of sala.jogadores) {
+			if (jog.estado != Estado.SALA) {
+				res.valido = false;
+				res.mensagem = 'Alguém ainda não voltou para a sala';
+				break;
+			}
+		}
+
 		return res;
 	},
 

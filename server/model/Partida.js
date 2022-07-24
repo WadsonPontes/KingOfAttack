@@ -109,6 +109,28 @@ class Partida {
             jogador.dano = jogador.dano_inicial;
             jogador.velocidade = jogador.velocidade_inicial;
             jogador.inventario = [];
+            
+            let classes = ['cavaleiro', 'ninja', 'samurai', 'robo'];
+            jogador.classe = classes[Math.floor((Math.random() * 4))];
+
+            if (jogador.classe == 'cavaleiro' || jogador.classe == 'robo') {
+                jogador.largura = 232;
+                jogador.altura = 280;
+                jogador.y = 70;
+            }
+            else {
+                jogador.largura = 121;
+                jogador.altura = 220;
+                jogador.y = 90;
+            }
+
+            jogador.x = Math.floor((Math.random() * (2000 - jogador.largura)) + 1);
+            
+            jogador.angulo = 0;
+            jogador.escala = 1;
+            jogador.pose = 'idle';
+            jogador.quadro = 0;
+            jogador.duracao = 0;
             jogador.estado = Estado.SALA;
         }
 

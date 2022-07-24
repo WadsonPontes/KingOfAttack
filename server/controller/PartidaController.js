@@ -53,14 +53,16 @@ module.exports = {
 	},
 
 	listar: (GM, partida) => {
-		for (let jog of partida.jogadores) {
-	        jog.ws.send(JSON.stringify({
-	            tipo: 'partida',
-	            funcao: 'listar',
-	            jogadores: partida.getJogadores(),
-	            itens: partida.getItens()
-	        }));
-	    }
+		if (partida) {
+			for (let jog of partida.jogadores) {
+		        jog.ws.send(JSON.stringify({
+		            tipo: 'partida',
+		            funcao: 'listar',
+		            jogadores: partida.getJogadores(),
+		            itens: partida.getItens()
+		        }));
+		    }
+		}
 	},
 
 	movimentar: (GM, ws, dados, jogador) => {
@@ -71,9 +73,9 @@ module.exports = {
 			mensagem: ''
 		}
 
-		jogador.set(dados.jogador);
+		if (jogador.estado == Estado.JOGO) jogador.set(dados.jogador);
 
-		if (res.valido) {
+		if (res.valido && jogador.estado == Estado.JOGO) {
 			jogador.ws.send(JSON.stringify({
 	            tipo: 'partida',
 	            funcao: 'movimentar',
@@ -223,7 +225,8 @@ module.exports = {
 				tipo: 'partida',
 				funcao: 'finalizar',
 				estado: 'erro',
-				mensagem: res.mensagem
+				mensagem: res.mensagem,
+				jogador: jogador.get()
 			}));
 		}
 	}

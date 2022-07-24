@@ -36,10 +36,10 @@ class Jogador {
 		this.nome = uuid.v4();
 		let classes = ['cavaleiro', 'ninja', 'samurai', 'robo'];
 		this.classe = classes[Math.floor((Math.random() * 4))];
-		this.max_vida = 5000;
-		this.vida = 5000;
+		this.max_vida = 2500;
+		this.vida = 2500;
 		this.dano = 10;
-		thi.dano_inicial = 10;
+		this.dano_inicial = 10;
 		this.velocidade = 10;
 		this.velocidade_inicial = 10;
 		this.inventario = [];
@@ -67,6 +67,7 @@ class Jogador {
 
 	get() {
 		return {
+			id: this.id,
 			nome: this.nome,
 			classe: this.classe,
 			max_vida: this.max_vida,
@@ -92,6 +93,7 @@ class Jogador {
 	}
 
 	set(dados) {
+		this.id = dados.id;
 		this.nome = dados.nome;
 		this.classe = dados.classe;
 		this.max_vida = dados.max_vida;

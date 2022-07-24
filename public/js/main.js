@@ -15,7 +15,7 @@ ws.onmessage = (evento) => {
     switch (dados.tipo) {
         case 'conexao':
             jogador = dados.jogador;
-            mudarPara('tela_jogo');
+            // mudarPara('tela_jogo');
             break;
         case 'entrar':
             verificarEntrarNoJogo(dados);
@@ -218,11 +218,11 @@ function carregarPreparacao() {
 
 function carregarJogo() {
     iniciarMS();
-    loop();
     ws.send(JSON.stringify({
         tipo: 'partida',
         funcao: 'listar'
     }));
+    loop();
 }
 
 function carregarResultado() {
@@ -258,10 +258,14 @@ function verificarMovimentacao(dados) {
 
 function verificarFinalizarPartida(dados) {
     if (dados.estado == 'erro') {
-        e.erro_jogo.textContent = dados.mensagem;
+        // e.erro_jogo.textContent = dados.mensagem;
+        jogador = dados.jogador;
     }
     else {
         jogador = dados.jogador;
+        jogadores = null;
+        itens = null;
+        ganhador = null;
     }
 }
 
@@ -442,7 +446,7 @@ function loop() {
             let vivos = 0;
 
             for (let jog of jogadores) {
-                if (jog.estado == 6 /* JOGO */) {
+                if (jog.estado == 6 /* JOGO */ || jog.estado == 7 /* RESULTADO */ || jog.estado == 3 /* SALA */) {
                     ++vivos;
                     ganhador = jog;
                 }

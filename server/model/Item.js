@@ -28,7 +28,7 @@ class Item {
 		this.nome = 'caixote';
 		this.max_vida = 1000;
 		this.vida = 700;
-		this.cura = 2000;
+		this.cura = 1000;
 		this.velocidade = 10;
 		this.forca = 10;
 		this.largura = 100;
