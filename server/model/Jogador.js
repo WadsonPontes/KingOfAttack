@@ -12,7 +12,9 @@ class Jogador {
 	max_vida;
 	vida;
 	dano;
+	dano_inicial;
 	velocidade;
+	velocidade_inicial;
 	inventario;
 	x;
 	y;
@@ -37,9 +39,10 @@ class Jogador {
 		this.max_vida = 5000;
 		this.vida = 5000;
 		this.dano = 10;
+		thi.dano_inicial = 10;
 		this.velocidade = 10;
+		this.velocidade_inicial = 10;
 		this.inventario = [];
-		
 
 		if (this.classe == 'cavaleiro' || this.classe == 'robo') {
 			this.largura = 232;
@@ -69,7 +72,9 @@ class Jogador {
 			max_vida: this.max_vida,
 			vida: this.vida,
 			dano: this.dano,
+			dano_inicial: this.dano_inicial,
 			velocidade: this.velocidade,
+			velocidade_inicial: this.velocidade_inicial,
 			inventario: this.inventario,
 			x: this.x,
 			y: this.y,
@@ -92,7 +97,9 @@ class Jogador {
 		this.max_vida = dados.max_vida;
 		this.vida = dados.vida;
 		this.dano = dados.dano;
+		this.dano_inicial = dados.dano_inicial;
 		this.velocidade = dados.velocidade;
+		this.velocidade_inicial = dados.velocidade_inicial;
 		this.inventario = dados.inventario;
 		this.x = dados.x;
 		this.y = dados.y;

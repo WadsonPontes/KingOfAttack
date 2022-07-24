@@ -19,6 +19,9 @@ module.exports = {
 			case 'coletar':
 				GM.PartidaController.coletar(GM, ws, dados, jogador);
 				break;
+			case 'finalizar':
+				GM.PartidaController.finalizar(GM, ws, dados, jogador);
+				break;
 			default:
 				break;
 		}
@@ -190,6 +193,35 @@ module.exports = {
 			ws.send(JSON.stringify({
 				tipo: 'partida',
 				funcao: 'sair',
+				estado: 'erro',
+				mensagem: res.mensagem
+			}));
+		}
+	},
+
+	finalizar: (GM, ws, dados, jogador) => {
+		// let res = GM.Util.validarFinalizarPartida(GM, jogador);
+		let res = {
+			valido: true,
+			mensagem: ''
+		}
+
+		if (res.valido && jogador.idpartida) {
+			let partida = GM.partidas[jogador.idpartida];
+
+			partida.deletar(GM);
+
+			ws.send(JSON.stringify({
+				tipo: 'partida',
+				funcao: 'finalizar',
+				estado: 'sucesso',
+				jogador: jogador.get()
+			}));
+		}
+		else {
+			ws.send(JSON.stringify({
+				tipo: 'partida',
+				funcao: 'finalizar',
 				estado: 'erro',
 				mensagem: res.mensagem
 			}));

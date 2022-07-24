@@ -42,8 +42,12 @@
                 <canvas></canvas>
                 <p id="erro-jogo" class="erro"></p>
             </section>
-            <section id="tela-resultado" class="desligado"></section>
-
+            <section id="tela-resultado" class="desligado">
+                
+            </section>
+            <!-------------------------------------------------------------------------------------------------->
+            <!------------------------------------------- MODALS ----------------------------------------------->
+            <!-------------------------------------------------------------------------------------------------->
             <dialog id="modal-criar-sala">
                 <header><h2>Criar Sala</h2></header>
 
@@ -117,6 +121,19 @@
                 <menu>
                     <button onclick="fecharModal()">Cancelar</button>
                     <button onclick="deletarSala()">Excluir</button>
+                </menu>
+            </dialog>
+
+            <dialog id="modal-resultado-partida">
+                <header><h2>Resultado</h2></header>
+
+                <section>
+                    <p id="texto-resultado-partida">Parabéns! Você ganhou a partida!</p>
+                    <p id="erro-resultado-partida" class="erro"></p>
+                </section>
+
+                <menu>
+                    <button onclick="voltarParaSala()">Ok</button>
                 </menu>
             </dialog>
         </article>

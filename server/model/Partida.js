@@ -99,6 +99,21 @@ class Partida {
 
         this.jogadores.pop();
     }
+
+    deletar(GM) {
+        GM.salas[this.idsala].idpartida = null;
+
+        for (let jogador of this.jogadores) {
+            jogador.idpartida = null;
+            jogador.vida = jogador.max_vida;
+            jogador.dano = jogador.dano_inicial;
+            jogador.velocidade = jogador.velocidade_inicial;
+            jogador.inventario = [];
+            jogador.estado = Estado.SALA;
+        }
+
+        delete GM.partidas[this.id];
+    }
 }
 
 module.exports = Partida;

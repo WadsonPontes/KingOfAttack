@@ -5,6 +5,7 @@ let modal = null;
 let jogador;
 let jogadores;
 let itens;
+let ganhador;
 let carregados = 0;
 
 ws.onmessage = (evento) => {
@@ -97,6 +98,9 @@ function mainPartida(dados) {
             break;
         case 'coletar':
             verificarColetar(dados);
+            break;
+        case 'finalizar':
+            verificarFinalizarPartida(dados);
             break;
         default:
             verificarMovimentacao(dados);
@@ -221,6 +225,23 @@ function carregarJogo() {
     }));
 }
 
+function carregarResultado() {
+    ws.send(JSON.stringify({
+        tipo: 'partida',
+        funcao: 'finalizar'
+    }));
+
+    if (ganhador.id != jogador.id) {
+        e.texto_resultado_partida.textContent = "Derrota! Você perdeu a partida!";
+    }
+    abrirModal('modal_resultado_partida');
+}
+
+function voltarParaSala() {
+    fecharModal('modal_resultado_partida');
+    mudarPara('tela_sala');
+}
+
 function verificarJogo(dados) {
     jogadores = dados.jogadores;
     itens = dados.itens;
@@ -231,7 +252,16 @@ function verificarMovimentacao(dados) {
         e.erro_jogo.textContent = dados.mensagem;
     }
     else {
-        
+        // Não faz nada.
+    }
+}
+
+function verificarFinalizarPartida(dados) {
+    if (dados.estado == 'erro') {
+        e.erro_jogo.textContent = dados.mensagem;
+    }
+    else {
+        jogador = dados.jogador;
     }
 }
 
@@ -280,7 +310,7 @@ function loop() {
         }
     }
 
-    if (carregados > 89) {
+    if (carregados > 167) {
         let img = e.mapa;
         e.ctx.save();
         e.ctx.translate((e.canvas.width/2) - ((jogador.largura * (e.canvas.width/1920))/2) - (1000 + jogador.x) * (e.canvas.width/1920), (e.canvas.height - (6000 * (e.canvas.width/1920))));
@@ -408,6 +438,25 @@ function loop() {
     }
 
     if (jogador && jogador.estado != 10 /* DESCONECTADO */) {
+        if (jogador && jogadores) {
+            let vivos = 0;
+
+            for (let jog of jogadores) {
+                if (jog.estado == 6 /* JOGO */) {
+                    ++vivos;
+                    ganhador = jog;
+                }
+            }
+
+            if (vivos == 1) {
+                jogador.estado = 7; // RESULTADO
+                mudarPara('tela_resultado');
+            }
+            else {
+                ganhador = null;
+            }
+        }
+
         iniciarMS();
         ws.send(JSON.stringify({
             tipo: 'partida',
@@ -426,7 +475,7 @@ function loop() {
         e.ctx.fillText('DESCONECTADO', e.canvas.width/2, e.canvas.height/2);
     }
 
-    window.requestAnimationFrame(loop);
+    if (!jogador || jogador.estado != 7) window.requestAnimationFrame(loop);
     // setTimeout(loop, 0);
 }
 
@@ -761,11 +810,13 @@ function fecharModal() {
 function mudarPara(nova) {
     fecharModal();
 
-    e[nova].classList.remove('desligado');
-    e[tela].classList.add('desligado');
-    tela = nova;
+    if (nova != 'tela_resultado') {
+        e[nova].classList.remove('desligado');
+        e[tela].classList.add('desligado');
+        tela = nova;
+    }
 
-    switch (tela) {
+    switch (nova) {
         case 'tela_saguao':
             carregarSaguao();
             break;
@@ -777,6 +828,9 @@ function mudarPara(nova) {
             break;
         case 'tela_jogo':
             carregarJogo();
+            break;
+        case 'tela_resultado':
+            carregarResultado();
             break;
         default:
             break;
@@ -821,6 +875,10 @@ function main() {
 
     e.modal_deletar_sala = document.querySelector('#modal-deletar-sala');
     e.erro_deletar_sala = document.querySelector('#erro-deletar-sala');
+
+    e.modal_resultado_partida = document.querySelector('#modal-resultado-partida');
+    e.texto_resultado_partida = document.querySelector('#texto-resultado-partida');
+    e.erro_resultado_partida = document.querySelector('#erro-resultado-partida');
 
     e.erro_saguao = document.querySelector('#erro-saguao');
     e.erro_sala = document.querySelector('#erro-sala');
